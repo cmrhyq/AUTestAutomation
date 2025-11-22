@@ -71,7 +71,7 @@ class TestBaseService:
         assert service.session.headers['X-API-Key'] == 'key_123'
         service.close()
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_get_request(self, mock_request):
         """测试 GET 请求"""
         # 模拟响应
@@ -91,7 +91,7 @@ class TestBaseService:
         mock_request.assert_called_once()
         service.close()
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_post_request(self, mock_request):
         """测试 POST 请求"""
         mock_response = Mock()
@@ -109,7 +109,7 @@ class TestBaseService:
         assert response.json()['name'] == 'New User'
         service.close()
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_extract_and_cache(self, mock_request):
         """测试数据提取和缓存"""
         mock_response = Mock()
@@ -188,7 +188,7 @@ class TestBaseService:
         
         service.close()
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_retry_on_connection_error(self, mock_request):
         """测试连接错误时的重试机制"""
         # 前两次失败，第三次成功

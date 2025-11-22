@@ -97,7 +97,7 @@ def _create_allure_environment_properties():
         logging.warning(f"Failed to create Allure environment properties: {e}")
 
 
-def pytest_session_start(session):
+def pytest_sessionstart(session):
     """
     在创建 Session 对象之后、执行数据收集之前调用，并进入运行测试循环。
     由于此时 allure-results 目录已被清理，因此在此处创建 environment.properties 文件是合适的。
@@ -114,7 +114,7 @@ def pytest_session_start(session):
     logger.info("Allure environment properties created")
 
 
-def pytest_session_finish(session, exitstatus):
+def pytest_sessionfinish(session, exitstatus):
     """
     在整个测试运行结束后，返回退出状态之前调用。
 
@@ -157,7 +157,7 @@ def pytest_session_finish(session, exitstatus):
     logger.info("=" * 80)
 
 
-def pytest_runtest_log_report(report):
+def pytest_runtest_logreport(report):
     """
     在生成测试报告后调用。
 
