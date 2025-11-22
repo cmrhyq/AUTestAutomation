@@ -12,8 +12,6 @@
 2. TestLogger 使用 threading.Lock 保护日志系统初始化和 logger 字典访问
 3. Python logging 模块的 FileHandler 本身是线程安全的
 4. 文件读取操作使用额外的锁保护
-
-Requirements: 4.4
 """
 
 import threading
@@ -34,7 +32,7 @@ class TestThreadSafety:
         TestLogger.setup_logger()
     
     def test_data_cache_concurrent_writes(self):
-        """测试 DataCache 的并发写入（Requirements 4.4）"""
+        """测试 DataCache 的并发写入"""
         cache = DataCache.get_instance()
         cache.clear()
         
@@ -76,7 +74,7 @@ class TestThreadSafety:
         assert cache.size() == expected_size
     
     def test_data_cache_concurrent_reads(self):
-        """测试 DataCache 的并发读取（Requirements 4.4）"""
+        """测试 DataCache 的并发读取"""
         cache = DataCache.get_instance()
         cache.clear()
         
@@ -120,7 +118,7 @@ class TestThreadSafety:
         assert len(errors) == 0, f"Errors occurred: {errors}"
     
     def test_data_cache_concurrent_mixed_operations(self):
-        """测试 DataCache 的并发混合操作（读写混合）（Requirements 4.4）"""
+        """测试 DataCache 的并发混合操作（读写混合）"""
         cache = DataCache.get_instance()
         cache.clear()
         
@@ -167,7 +165,7 @@ class TestThreadSafety:
         assert len(errors) == 0, f"Errors occurred: {errors}"
     
     def test_logger_concurrent_writes(self):
-        """测试 Logger 的并发写入（Requirements 4.4）"""
+        """测试 Logger 的并发写入"""
         num_threads = 20
         logs_per_thread = 50
         errors = []
@@ -209,7 +207,7 @@ class TestThreadSafety:
             assert len(log_content) > 0
     
     def test_logger_concurrent_get_logger(self):
-        """测试并发获取 Logger 实例（Requirements 4.4）"""
+        """测试并发获取 Logger 实例"""
         num_threads = 30
         errors = []
         loggers = {}
@@ -249,7 +247,7 @@ class TestThreadSafety:
         assert len(loggers) == 10
     
     def test_mixed_cache_and_logger_concurrent_access(self):
-        """测试 Cache 和 Logger 的混合并发访问（Requirements 4.4）"""
+        """测试 Cache 和 Logger 的混合并发访问"""
         cache = DataCache.get_instance()
         cache.clear()
         
@@ -303,7 +301,7 @@ class TestThreadSafety:
         assert cache.size() == expected_size
     
     def test_stress_concurrent_access(self):
-        """压力测试：高并发场景（Requirements 4.4）"""
+        """压力测试：高并发场景"""
         cache = DataCache.get_instance()
         cache.clear()
         

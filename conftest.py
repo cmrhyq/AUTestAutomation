@@ -2,6 +2,11 @@ import multiprocessing
 from pathlib import Path
 from datetime import datetime
 
+import pytest
+
+from config import Settings
+from core import TestLogger, DataCache
+
 
 # ==================== Pytest Hooks for Parallel Execution ====================
 

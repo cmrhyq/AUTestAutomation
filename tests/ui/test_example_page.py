@@ -3,8 +3,6 @@ Example Page UI 测试
 
 演示完整的 UI 测试用例，包括日志记录、截图和报告功能。
 
-Requirements: 10.3
-
 运行方式：
     # 运行所有测试
     pytest tests/ui/test_example_page.py -v
@@ -35,7 +33,6 @@ class TestExamplePageBasics:
     Example 页面基础功能测试
     
     测试页面导航、元素定位和内容验证。
-    Requirements: 10.3
     """
     
     @allure.title("验证页面可以成功打开")
@@ -49,8 +46,6 @@ class TestExamplePageBasics:
         1. 页面能够成功导航
         2. 页面 URL 正确
         3. 页面标题正确
-        
-        Requirements: 1.1, 10.3
         """
         logger = TestLogger.get_logger("test_page_opens_successfully")
         logger.info("=== Starting test: Page opens successfully ===")
@@ -90,8 +85,6 @@ class TestExamplePageBasics:
         验证：
         1. H1 元素可见
         2. H1 文本内容正确
-        
-        Requirements: 1.4, 8.2, 10.3
         """
         logger = TestLogger.get_logger("test_page_heading")
         logger.info("=== Starting test: Page heading ===")
@@ -134,8 +127,6 @@ class TestExamplePageBasics:
         1. 描述段落存在
         2. 描述文本不为空
         3. 描述包含预期关键词
-        
-        Requirements: 8.2, 10.3
         """
         logger = TestLogger.get_logger("test_page_description")
         logger.info("=== Starting test: Page description ===")
@@ -177,8 +168,6 @@ class TestExamplePageBasics:
         1. 链接元素存在
         2. 链接 href 属性正确
         3. 链接指向 IANA 网站
-        
-        Requirements: 8.2, 10.3
         """
         logger = TestLogger.get_logger("test_more_info_link")
         logger.info("=== Starting test: More info link ===")
@@ -216,7 +205,6 @@ class TestExamplePageVerification:
     Example 页面完整性验证测试
     
     测试页面的整体状态和完整性。
-    Requirements: 10.3
     """
     
     @allure.title("验证页面完整性")
@@ -230,8 +218,6 @@ class TestExamplePageVerification:
         1. 所有关键元素都存在
         2. 页面 URL 正确
         3. 页面状态正常
-        
-        Requirements: 1.1, 1.4, 10.3
         """
         logger = TestLogger.get_logger("test_page_integrity")
         logger.info("=== Starting test: Page integrity ===")
@@ -269,8 +255,6 @@ class TestExamplePageVerification:
         1. 标题元素可见
         2. 描述元素可见
         3. 链接元素可见
-        
-        Requirements: 1.4, 10.3
         """
         logger = TestLogger.get_logger("test_elements_visibility")
         logger.info("=== Starting test: Elements visibility ===")
@@ -310,7 +294,6 @@ class TestFrameworkFeatures:
     框架功能演示测试
     
     演示日志记录、截图、数据缓存等框架功能。
-    Requirements: 5.1, 5.2, 5.3, 5.4, 6.1, 6.3, 10.3
     """
     
     @allure.title("演示日志记录功能")
@@ -324,8 +307,6 @@ class TestFrameworkFeatures:
         1. 不同级别的日志记录
         2. 日志自动附加到 Allure
         3. 日志格式化
-        
-        Requirements: 5.1, 5.2, 5.3, 5.4, 10.3
         """
         logger = TestLogger.get_logger("test_logging_demo")
         
@@ -362,8 +343,6 @@ class TestFrameworkFeatures:
         1. 手动截图
         2. 截图附加到 Allure
         3. 完整页面截图
-        
-        Requirements: 6.1, 6.3, 6.4, 10.3
         """
         logger = TestLogger.get_logger("test_screenshot_demo")
         logger.info("=== Starting screenshot demo ===")
@@ -402,8 +381,6 @@ class TestFrameworkFeatures:
         1. 数据存储到缓存
         2. 数据从缓存检索
         3. 缓存数据验证
-        
-        Requirements: 3.1, 3.2, 3.3, 3.4, 10.3
         """
         logger = TestLogger.get_logger("test_data_cache_demo")
         logger.info("=== Starting data cache demo ===")

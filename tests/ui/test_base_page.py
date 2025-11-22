@@ -27,7 +27,7 @@ class TestBasePage:
         assert base_page.logger is not None
     
     def test_navigate(self, page: Page):
-        """测试页面导航功能 (Requirements 1.1)"""
+        """测试页面导航功能 """
         base_page = BasePage(page)
         
         # 导航到测试页面
@@ -56,7 +56,7 @@ class TestBasePage:
         assert test_url in current_url
     
     def test_wait_for_element(self, page: Page):
-        """测试元素等待机制 (Requirements 1.4)"""
+        """测试元素等待机制 """
         base_page = BasePage(page)
         base_page.navigate("https://example.com")
         
@@ -65,7 +65,7 @@ class TestBasePage:
         assert locator is not None
     
     def test_get_text(self, page: Page):
-        """测试获取元素文本 (Requirements 8.2)"""
+        """测试获取元素文本 """
         base_page = BasePage(page)
         base_page.navigate("https://example.com")
         
@@ -86,7 +86,7 @@ class TestBasePage:
         assert not base_page.is_visible("#nonexistent-element")
     
     def test_take_screenshot(self, page: Page):
-        """测试截图功能 (Requirements 6.1, 6.2, 6.3, 6.4)"""
+        """测试截图功能 """
         base_page = BasePage(page)
         base_page.navigate("https://example.com")
         

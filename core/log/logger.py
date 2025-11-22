@@ -25,7 +25,7 @@ class TestLogger:
     - 同时输出到控制台和文件
     - 统一的日志格式（包含时间戳、级别和消息）
     - Allure 报告集成
-    - 线程安全的文件写入（Requirements 4.4）
+    - 线程安全的文件写入
     """
     
     _loggers = {}

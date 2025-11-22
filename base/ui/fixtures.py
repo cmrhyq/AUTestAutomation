@@ -34,8 +34,6 @@ def playwright_instance() -> Generator[Playwright, None, None]:
     
     Yields:
         Playwright: Playwright 实例
-        
-    Requirements: 1.3
     """
     logger = TestLogger.get_logger("PlaywrightFixture")
     logger.info("Initializing Playwright instance")
@@ -59,8 +57,6 @@ def browser(playwright_instance: Playwright) -> Generator[Browser, None, None]:
         
     Yields:
         Browser: 浏览器实例
-        
-    Requirements: 1.2, 1.3
     """
     logger = TestLogger.get_logger("BrowserFixture")
     
@@ -109,8 +105,6 @@ def context(browser: Browser) -> Generator[BrowserContext, None, None]:
         
     Yields:
         BrowserContext: 浏览器上下文
-        
-    Requirements: 1.3
     """
     logger = TestLogger.get_logger("ContextFixture")
     logger.debug("Creating new browser context")
@@ -152,8 +146,6 @@ def page(context: BrowserContext, request: pytest.FixtureRequest) -> Generator[P
         
     Yields:
         Page: 页面实例
-        
-    Requirements: 1.3, 6.1, 6.2
     """
     logger = TestLogger.get_logger("PageFixture")
     test_name = request.node.name
@@ -197,8 +189,6 @@ def auto_screenshot_on_failure(request: pytest.FixtureRequest, page: Page) -> Ge
         
     Yields:
         None
-        
-    Requirements: 6.1, 6.2, 6.3, 6.4
     """
     logger = TestLogger.get_logger("AutoScreenshot")
     test_name = request.node.name
@@ -234,8 +224,6 @@ def pytest_runtest_makereport(item, call):
     Args:
         item: 测试项
         call: 测试调用信息
-        
-    Requirements: 6.1, 6.2
     """
     # 执行所有其他 hooks
     outcome = yield
@@ -256,8 +244,6 @@ def _capture_failure_screenshot(page: Page, test_name: str, failure_type: str) -
         page: 页面实例
         test_name: 测试名称
         failure_type: 失败类型（failure, exception 等）
-        
-    Requirements: 6.1, 6.2, 6.3, 6.4
     """
     logger = TestLogger.get_logger("ScreenshotCapture")
     
@@ -314,8 +300,6 @@ def setup_test_environment():
     - 验证配置
     
     在测试会话结束时清理资源。
-    
-    Requirements: 1.3
     """
     logger = TestLogger.get_logger("TestEnvironment")
     
