@@ -13,6 +13,7 @@ import allure
 from typing import Optional, Dict
 
 from base.api.services.base_service import BaseService
+from config import env_manager
 from core.log.logger import TestLogger
 from core.cache.data_cache import DataCache
 from config.settings import Settings
@@ -45,6 +46,12 @@ def api_cache():
     """
     cache = DataCache.get_instance()
     return cache
+
+
+@pytest.fixture(scope="session")
+def api_env(api_logger):
+    env = env_manager.get_config()
+    return env
 
 
 @pytest.fixture(scope="function")
