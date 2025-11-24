@@ -510,7 +510,7 @@ class FileHelper:
         Returns:
             Path: 完整路径
         """
-        return FileHelper.join_path(Settings.TEST_DATA_DIR, *paths)
+        return FileHelper.join_path(Settings.PROJECT_DATA_DIR, *paths)
     
     @staticmethod
     def get_log_path(*paths: Union[str, Path]) -> Path:
