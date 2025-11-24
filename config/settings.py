@@ -203,12 +203,9 @@ class Settings:
     
     # 项目根目录
     PROJECT_ROOT: Path = Path(__file__).parent.parent
-    
-    # ==================== 数据配置 ====================
-    
-    # 测试数据目录
-    # 环境变量：TEST_DATA_DIR
-    TEST_DATA_DIR: str = os.getenv("TEST_DATA_DIR", "test_data")
+
+    # 项目数据目录
+    PROJECT_DATA_DIR: Path = os.path.join(PROJECT_ROOT, "data")
     
     # ==================== 配置验证方法 ====================
     
@@ -317,7 +314,7 @@ class Settings:
             cls.ALLURE_RESULTS_DIR,
             cls.ALLURE_REPORT_DIR,
             cls.SCREENSHOT_DIR,
-            cls.TEST_DATA_DIR,
+            cls.PROJECT_DATA_DIR,
         ]
         
         for directory in directories:
