@@ -1,4 +1,25 @@
 {
+  "sit5": {
+    "name": "sit5",
+    "api_base_url": "http://openapi.portal.nbpod3-31-181-20030.4a.cmit.cloud:20030",
+    "api_timeout": 30,
+    "api_verify_ssl": true,
+    "browser_type": "chromium",
+    "headless": true,
+    "browser_timeout": 30000,
+    "bearer_token": null,
+    "api_key": null,
+    "basic_auth_username": "auto_test_probe",
+    "basic_auth_password": "Abc123!@#$",
+    "log_level": "INFO",
+    "max_retries": 3,
+    "retry_delay": 1,
+    "enable_retry": true,
+    "parallel_workers": "auto",
+    "enable_parallel": true,
+    "custom_config": {}
+
+  },
   "dev": {
     "name": "dev",
     "api_base_url": "http://localhost:8080",
