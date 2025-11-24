@@ -25,6 +25,7 @@ from requests.exceptions import (
 from config.settings import Settings
 from core.cache.data_cache import DataCache
 from core.log.logger import TestLogger
+from utils.internet_utils import get_random_pc_ua
 
 
 class BaseService:
@@ -220,6 +221,17 @@ class BaseService:
         
         for attempt in range(max_retries + 1):
             try:
+
+                if "headers" in kwargs:
+                    # 合并会话头和请求头
+                    headers = kwargs['headers']
+                    headers['Content-Type'] = 'application/json'
+                    headers['User-Agent'] = get_random_pc_ua()
+                    kwargs['headers'] = headers
+                else:
+                    headers = {'Content-Type': 'application/json', 'User-Agent': get_random_pc_ua()}
+                    kwargs['headers'] = headers
+
                 # 记录请求信息
                 self._log_request(method, url, **kwargs)
                 
