@@ -1,0 +1,18 @@
+{
+  "api_base_url": "http://openapi.portal.nbpod3-31-181-20030.4a.cmit.cloud:20030",
+  "api_timeout": 30,
+  "api_verify_ssl": true,
+  "basic_auth_username": "auto_test_probe",
+  "basic_auth_password": "Abc123!@#$",
+  "browser_type": "chromium",
+  "headless": true,
+  "browser_timeout": 30000,
+  "log_level": "INFO",
+  "max_retries": 3,
+  "retry_delay": 1,
+  "enable_retry": true,
+  "parallel_workers": "auto",
+  "enable_parallel": true,
+  "bearer_token": null,
+  "api_key": null
+}
