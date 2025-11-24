@@ -75,6 +75,111 @@ pip install -r requirements.txt
 playwright install
 ```
 
+### 3. 新增配置
+
+在根目录新建.env文件并写入以下内容
+```dotenv
+# ==================== 测试环境配置 ====================
+# 测试环境：dev, test, staging, prod
+TEST_ENV=test
+
+# ==================== 浏览器配置 ====================
+# 浏览器类型：chromium, firefox, webkit
+BROWSER_TYPE=chromium
+# 是否使用无头模式运行浏览器 (true/false)
+HEADLESS=false
+# 浏览器操作超时时间（毫秒）
+BROWSER_TIMEOUT=30000
+# 页面加载超时时间（毫秒）
+PAGE_LOAD_TIMEOUT=30000
+# 浏览器启动参数（逗号分隔）
+BROWSER_ARGS=
+# 视口宽度
+VIEWPORT_WIDTH=1920
+# 视口高度
+VIEWPORT_HEIGHT=1080
+# 是否启用浏览器开发者工具 (true/false)
+DEVTOOLS=false
+
+# ==================== API 配置 ====================
+# API 基础 URL
+API_BASE_URL=https://test-api.example.com
+# API 请求超时时间（秒）
+API_TIMEOUT=30
+# API 连接超时时间（秒）
+API_CONNECT_TIMEOUT=10
+# API 读取超时时间（秒）
+API_READ_TIMEOUT=30
+# 是否验证 SSL 证书 (true/false)
+VERIFY_SSL=true
+
+# ==================== 认证配置 ====================
+# Bearer Token
+BEARER_TOKEN=
+# API Key
+API_KEY=
+# API Key Header 名称
+API_KEY_HEADER=X-API-Key
+# Basic Auth 用户名
+BASIC_AUTH_USERNAME=
+# Basic Auth 密码
+BASIC_AUTH_PASSWORD=
+
+# ==================== 日志配置 ====================
+# 日志级别：DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL=DEBUG
+# 日志目录
+LOG_DIR=logs
+# 日志文件名格式
+LOG_FILE_FORMAT=test_{timestamp}.log
+# 是否在控制台输出日志 (true/false)
+LOG_TO_CONSOLE=true
+# 是否输出日志到文件 (true/false)
+LOG_TO_FILE=true
+# 日志格式
+LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+# 日志时间格式
+LOG_DATE_FORMAT=%Y-%m-%d %H:%M:%S
+
+# ==================== 并行执行配置 ====================
+# 并行 worker 数量：auto 表示自动检测 CPU 核心数，或指定具体数字
+PARALLEL_WORKERS=auto
+# 是否启用并行执行 (true/false)
+ENABLE_PARALLEL=true
+# 并行执行分发策略：loadscope, loadfile, loadgroup, load
+PARALLEL_DIST_MODE=loadscope
+
+# ==================== 重试配置 ====================
+# 最大重试次数
+MAX_RETRIES=3
+# 重试延迟时间（秒）
+RETRY_DELAY=1
+# 是否启用失败重试 (true/false)
+ENABLE_RETRY=false
+
+# ==================== Allure 报告配置 ====================
+# Allure 结果目录
+ALLURE_RESULTS_DIR=report/allure-results
+# Allure 报告目录
+ALLURE_REPORT_DIR=report/allure-report
+# 是否清理旧的 Allure 结果 (true/false)
+ALLURE_CLEAN_RESULTS=true
+
+# ==================== 截图配置 ====================
+# 截图保存目录
+SCREENSHOT_DIR=screenshots
+# 是否在失败时自动截图 (true/false)
+SCREENSHOT_ON_FAILURE=true
+# 截图格式：png, jpeg
+SCREENSHOT_FORMAT=png
+# 截图质量（仅对 jpeg 有效，1-100）
+SCREENSHOT_QUALITY=80
+
+# ==================== 数据配置 ====================
+# 测试数据目录
+TEST_DATA_DIR=test_data
+```
+
 ### 3. 运行测试
 
 ```bash
