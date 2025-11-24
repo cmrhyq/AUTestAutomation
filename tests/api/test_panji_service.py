@@ -27,7 +27,7 @@ class TestPanjiAPI:
             panji_sign = PanjiSignEntity(
                 username=api_env.get("basic_auth_username"),
                 password=api_env.get("basic_auth_password"),
-                tenant_code="tenant_admin"
+                tenant_code=api_env.get("tenant_code")
             )
             sign_info = panji_service.get_token(panji_sign)
 

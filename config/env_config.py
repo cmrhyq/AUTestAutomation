@@ -50,19 +50,17 @@ class EnvironmentManager:
     支持 JSON 和 YAML 格式。
     
     配置文件命名规则：
-    - config/env/env_dev.json
-    - config/env/env_test.json
-    - config/env/env_prod.json
+    - env_{env_name}.json
     """
     
-    def __init__(self, config_dir: str = "config/env"):
+    def __init__(self, config_dir: str = None):
         """
         初始化环境管理器
         
         Args:
             config_dir: 配置文件目录路径
         """
-        self.config_dir = Path(Settings.PROJECT_DATA_DIR)
+        self.config_dir = config_dir or Path(Settings.PROJECT_DATA_DIR)
         self._current_env: Optional[str] = None
         self._config: Optional[EnvConfig] = None
         
