@@ -1,9 +1,17 @@
 import logging
+from dataclasses import dataclass
 from typing import Dict, Any
 
 from base.api.services.base_service import BaseService
-from model.entity.panji_entity import PanjiSignEntity
+from core import DataCache
 
+
+@dataclass
+class PanjiSignEntity(object):
+    username: str = None
+    password: str = None
+    tenant_code: str = None
+    expire_time: int = 18000000
 
 class PanJiService(BaseService):
 
@@ -25,4 +33,13 @@ class PanJiService(BaseService):
             "expireTime": panji_sign.expire_time,
         }
         response = self.post("/apisix/plugin/jwt/sign", json=sign_info)
+        return response.json()
+
+    def get_first_field_info(self) -> Dict[str, Any]:
+        self.logger.info(f"Getting First Field Info")
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        response = self.get(endpoint="/openapi/portal/restApi/firstFieldInfo/list", headers=headers)
         return response.json()
