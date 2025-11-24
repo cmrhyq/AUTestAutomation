@@ -174,10 +174,6 @@ SCREENSHOT_ON_FAILURE=true
 SCREENSHOT_FORMAT=png
 # 截图质量（仅对 jpeg 有效，1-100）
 SCREENSHOT_QUALITY=80
-
-# ==================== 数据配置 ====================
-# 测试数据目录
-TEST_DATA_DIR=test_data
 ```
 
 ### 3. 运行测试
