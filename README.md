@@ -1,6 +1,6 @@
-# Test Automation Framework
+# API UI Test Automation Framework
 
-基于 Pytest + Playwright + Requests + Allure 的高性能 UI/API 自动化测试框架
+AUTestAutomation 是一款基于 Pytest + Playwright + Requests + Allure 的高性能 UI/API 自动化测试框架
 
 ## 项目简介
 
@@ -18,44 +18,42 @@
 ## 项目结构
 
 ```
-test-automation-framework/
-├── config/                      # 配置模块
-│   ├── __init__.py
-│   ├── settings.py             # 全局配置
-│   └── env_config.py           # 环境配置
-├── core/                        # 核心功能模块
-│   ├── __init__.py
-│   ├── logger.py               # 日志管理器
-│   ├── data_cache.py           # 单例数据缓存
-│   └── allure_helper.py        # Allure 辅助工具
-├── ui/                          # UI 测试模块
-│   ├── __init__.py
-│   ├── pages/                  # Page Object 页面对象
-│   │   ├── __init__.py
-│   │   └── base_page.py        # 基础页面类
-│   └── fixtures.py             # UI 测试 fixtures
-├── api/                         # API 测试模块
-│   ├── __init__.py
-│   ├── services/               # API 服务封装
-│   │   ├── __init__.py
-│   │   └── base_service.py     # 基础服务类
-│   └── fixtures.py             # API 测试 fixtures
-├── tests/                       # 测试用例
-│   ├── __init__.py
-│   ├── ui/                     # UI 测试用例
-│   │   └── __init__.py
-│   └── api/                    # API 测试用例
-│       └── __init__.py
-├── utils/                       # 工具模块
-│   ├── __init__.py
-│   ├── file_helper.py          # 文件操作工具
-│   └── data_helper.py          # 数据处理工具
-├── logs/                        # 日志文件目录（自动创建）
-├── allure-results/              # Allure 结果目录（自动创建）
-├── conftest.py                  # Pytest 全局配置
-├── pytest.ini                   # Pytest 配置文件
-├── requirements.txt             # 依赖包列表
-└── README.md                    # 项目文档
+AUAutoTest/
+├── base/                           # 基础测试模块
+│   ├── ui/                         # UI 测试模块
+│   │   ├── pages/                  # Page Object 页面对象
+│   │   │   └── base_page.py        # 基础页面类
+│   │   └── fixtures.py             # UI 测试 fixtures
+│   └── api/                        # API 测试模块
+│       ├── services/               # API 服务封装
+│       │   └── base_service.py     # 基础服务类
+│       └── fixtures.py             # API 测试 fixtures
+├── config/                         # 配置模块
+│   ├── settings.py                 # 全局配置
+│   └── env_config.py               # 环境配置
+├── core/                           # 核心功能模块
+│   ├── logger.py                   # 日志管理器
+│   ├── data_cache.py               # 单例数据缓存
+│   └── allure_helper.py            # Allure 辅助工具
+├── tests/                          # 测试用例
+│   ├── ui/                         # UI 测试用例
+│   └── api/                        # API 测试用例
+├── utils/                          # 工具模块
+│   ├── file_helper.py              # 文件操作工具
+│   ├── internet_utils.py           # 网络相关工具
+│   ├── snow_id_utils.py            # 雪花ID工具
+│   └── data_helper.py              # 数据处理工具
+├── report/                         # 报告目录
+│   ├── allure-results/             # Allure 结果目录（自动创建）
+│   └── allure-report/              # Allure HTML报告目录
+├── logs/                           # 日志文件目录（自动创建）
+├── screenshots/                    # UI自动化测试截图目录
+├── .env                            # 系统级环境配置
+├── conftest.py                     # Pytest 全局配置
+├── generate_report.py              # 静态报告生成
+├── pytest.ini                      # Pytest 配置文件
+├── requirements.txt                # 依赖包列表
+└── README.md                       # 项目文档
 ```
 
 ## 快速开始
@@ -73,6 +71,83 @@ pip install -r requirements.txt
 
 # 安装 Playwright 浏览器驱动
 playwright install
+```
+
+### 3. 新增配置
+
+在根目录新建.env文件并写入以下内容
+```dotenv
+# ==================== 测试环境配置 ====================
+# 测试环境，这个环境可以自定义，但是定义前得保证 data/ 目录下有相应的环境配置文件
+TEST_ENV=test
+
+# ==================== 浏览器配置 ====================
+# 浏览器类型：chromium, firefox, webkit
+BROWSER_TYPE=chromium
+# 是否使用无头模式运行浏览器 (true/false)
+HEADLESS=false
+# 浏览器操作超时时间（毫秒）
+BROWSER_TIMEOUT=30000
+# 页面加载超时时间（毫秒）
+PAGE_LOAD_TIMEOUT=30000
+# 浏览器启动参数（逗号分隔）
+BROWSER_ARGS=
+# 视口宽度
+VIEWPORT_WIDTH=1920
+# 视口高度
+VIEWPORT_HEIGHT=1080
+# 是否启用浏览器开发者工具 (true/false)
+DEVTOOLS=false
+
+# ==================== 日志配置 ====================
+# 日志级别：DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL=DEBUG
+# 日志目录
+LOG_DIR=logs
+# 日志文件名格式
+LOG_FILE_FORMAT=test_{timestamp}.log
+# 是否在控制台输出日志 (true/false)
+LOG_TO_CONSOLE=true
+# 是否输出日志到文件 (true/false)
+LOG_TO_FILE=true
+# 日志格式
+LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+# 日志时间格式
+LOG_DATE_FORMAT=%Y-%m-%d %H:%M:%S
+
+# ==================== 并行执行配置 ====================
+# 并行 worker 数量：auto 表示自动检测 CPU 核心数，或指定具体数字
+PARALLEL_WORKERS=auto
+# 是否启用并行执行 (true/false)
+ENABLE_PARALLEL=true
+# 并行执行分发策略：loadscope, loadfile, loadgroup, load
+PARALLEL_DIST_MODE=loadscope
+
+# ==================== 重试配置 ====================
+# 最大重试次数
+MAX_RETRIES=3
+# 重试延迟时间（秒）
+RETRY_DELAY=1
+# 是否启用失败重试 (true/false)
+ENABLE_RETRY=false
+
+# ==================== Allure 报告配置 ====================
+# Allure 结果目录
+ALLURE_RESULTS_DIR=report/allure-results
+# Allure 报告目录
+ALLURE_REPORT_DIR=report/allure-report
+# 是否清理旧的 Allure 结果 (true/false)
+ALLURE_CLEAN_RESULTS=true
+
+# ==================== 截图配置 ====================
+# 截图保存目录
+SCREENSHOT_DIR=screenshots
+# 是否在失败时自动截图 (true/false)
+SCREENSHOT_ON_FAILURE=true
+# 截图格式：png, jpeg
+SCREENSHOT_FORMAT=png
+# 截图质量（仅对 jpeg 有效，1-100）
+SCREENSHOT_QUALITY=80
 ```
 
 ### 3. 运行测试
@@ -161,19 +236,19 @@ python generate_report.py clean
 
 ```bash
 # 方式 1: 运行测试并立即查看报告（推荐）
-pytest --alluredir=allure-results
-allure serve allure-results
+pytest --alluredir=./report/allure-results
+allure serve ./report/allure-results --language zh-CN
 
 # 方式 2: 生成静态报告到指定目录
 pytest --alluredir=allure-results
-allure generate allure-results -o allure-report --clean
+allure generate ./report/allure-results/ -o ./report/allure-report/ --clean --language zh-CN
 
 # 方式 3: 打开已生成的静态报告
-allure open allure-report
+allure open ./report/allure-report
 
 # 方式 4: 清理旧结果并重新生成
-pytest --alluredir=allure-results --clean-alluredir
-allure serve allure-results
+pytest --alluredir=./report/allure-results --clean-alluredir
+allure serve ./report/allure-results
 ```
 
 #### Allure 报告功能
@@ -198,7 +273,7 @@ Allure 报告提供以下信息：
 ```ini
 [pytest]
 addopts = 
-    --alluredir=allure-results
+    --alluredir=report/allure-results
     --clean-alluredir
 ```
 

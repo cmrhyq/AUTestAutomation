@@ -70,7 +70,7 @@ class TestDataCache:
         assert not cache.has("test_key")
     
     def test_update_existing_key(self):
-        """测试更新已存在的键（Requirements 3.4）"""
+        """测试更新已存在的键"""
         cache = DataCache.get_instance()
         
         # 首次存储
@@ -89,7 +89,7 @@ class TestDataCache:
         assert cache.get("key") == [1, 2, 3]
     
     def test_clear(self):
-        """测试清空缓存（Requirements 3.5）"""
+        """测试清空缓存"""
         cache = DataCache.get_instance()
         
         # 存储多个键值对
@@ -144,7 +144,7 @@ class TestDataCache:
         assert cache.size() == 0
     
     def test_thread_safety(self):
-        """测试线程安全性（Requirements 3.1, 4.4）"""
+        """测试线程安全性"""
         cache = DataCache.get_instance()
         cache.clear()
         

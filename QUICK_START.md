@@ -293,14 +293,14 @@ python generate_report.py serve
 pytest --alluredir=report/allure-results
 
 # 启动 Allure 服务器查看报告
-allure serve report/allure-results
+allure serve report/allure-results --language zh-CN
 ```
 
 ### 方式 3: 生成静态报告
 
 ```bash
 # 生成静态 HTML 报告
-allure generate allure-results -o allure-report --clean
+allure generate allure-results -o allure-report --clean --language zh-CN
 
 # 打开报告
 allure open allure-report

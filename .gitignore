@@ -137,7 +137,7 @@ report/allure-report/
 # .ms-playwright/
 
 # Test data (if contains sensitive info)
-# test_data/
+# data/
 
 # IDE specific files
 # VSCode

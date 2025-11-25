@@ -7,8 +7,6 @@ JSONPlaceholder API 测试示例
 - 请求/响应日志记录
 - Allure 报告集成
 - 测试数据依赖管理
-
-Requirements: 10.3
 """
 
 import pytest

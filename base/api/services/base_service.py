@@ -25,6 +25,7 @@ from requests.exceptions import (
 from config.settings import Settings
 from core.cache.data_cache import DataCache
 from core.log.logger import TestLogger
+from utils.internet_utils import get_random_pc_ua
 
 
 class BaseService:
@@ -165,8 +166,11 @@ class BaseService:
         
         if 'data' in kwargs:
             log_data['data'] = '***' if kwargs['data'] else None
+
+        if "headers" in kwargs:
+            log_data['headers'] = kwargs['headers']
         
-        self.logger.info(f"Request: {log_data}")
+        self.logger.debug(f"Request Information: {log_data}")
     
     def _log_response(self, response: requests.Response) -> None:
         """
@@ -188,7 +192,7 @@ class BaseService:
         except Exception:
             log_data['response_body'] = '(non-JSON or empty)'
         
-        self.logger.info(f"Response: {log_data}")
+        self.logger.debug(f"Response Information: {log_data}")
     
     def _make_request_with_retry(
         self,
@@ -217,6 +221,17 @@ class BaseService:
         
         for attempt in range(max_retries + 1):
             try:
+
+                if "headers" in kwargs:
+                    # 合并会话头和请求头
+                    headers = kwargs['headers']
+                    headers['Content-Type'] = 'application/json'
+                    headers['User-Agent'] = get_random_pc_ua()
+                    kwargs['headers'] = headers
+                else:
+                    headers = {'Content-Type': 'application/json', 'User-Agent': get_random_pc_ua()}
+                    kwargs['headers'] = headers
+
                 # 记录请求信息
                 self._log_request(method, url, **kwargs)
                 

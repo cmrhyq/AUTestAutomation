@@ -4,8 +4,6 @@ UI 测试示例
 演示如何使用测试框架编写 UI 自动化测试。
 包含完整的测试用例，展示日志记录、截图、报告等功能。
 
-Requirements: 10.3
-
 运行方式：
     # 运行所有 UI 测试示例
     pytest examples/ui_test_example.py -v

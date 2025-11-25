@@ -3,8 +3,6 @@ Allure 辅助工具模块
 
 该模块封装 Allure 报告相关的辅助功能，提供便捷的方法来附加各种类型的数据到测试报告中。
 支持截图、日志、JSON 数据附件，以及测试步骤装饰器。
-
-Requirements: 5.4, 6.3, 7.4
 """
 
 import json
@@ -34,8 +32,6 @@ class AllureHelper:
         Args:
             screenshot_bytes: 截图的字节数据
             name: 附件名称，默认为 "Screenshot"
-            
-        Requirements: 6.3
         
         使用示例：
             screenshot = page.screenshot()
@@ -60,8 +56,6 @@ class AllureHelper:
         Args:
             log_content: 日志文本内容
             name: 附件名称，默认为 "Log"
-            
-        Requirements: 5.4, 7.4
         
         使用示例:
             AllureHelper.attach_log("Test execution log content", "Execution Log")
@@ -84,8 +78,6 @@ class AllureHelper:
         Args:
             json_data: 要附加的字典数据
             name: 附件名称，默认为 "JSON Data"
-            
-        Requirements: 7.4
         
         使用示例:
             response_data = {"status": "success", "user_id": 123}

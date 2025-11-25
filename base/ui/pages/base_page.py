@@ -3,8 +3,6 @@ UI 测试基础页面类
 
 该模块实现 Page Object Model (POM) 模式的基础页面类，提供所有页面对象的通用功能。
 包括页面导航、元素等待、常用操作、截图和日志记录等功能。
-
-Requirements: 1.1, 1.2, 1.4, 8.2
 """
 
 import logging
@@ -30,8 +28,6 @@ class BasePage:
     - 集成日志记录
     
     所有具体的页面对象类都应该继承此类。
-    
-    Requirements: 1.1, 1.2, 1.4, 8.2
     """
     
     def __init__(self, page: Page, logger: Optional[logging.Logger] = None):
@@ -61,8 +57,6 @@ class BasePage:
                 - 'domcontentloaded': 等待 DOMContentLoaded 事件触发（默认）
                 - 'networkidle': 等待网络空闲
                 - 'commit': 等待网络响应接收完成
-        
-        Requirements: 1.1
         
         使用示例:
             page.navigate("https://example.com")
@@ -107,8 +101,6 @@ class BasePage:
         
         Returns:
             Locator: Playwright 定位器对象
-            
-        Requirements: 1.4
         
         使用示例:
             element = page.wait_for_element("#login-button")
@@ -150,8 +142,6 @@ class BasePage:
             timeout: 超时时间（毫秒）
             force: 是否强制点击（跳过可操作性检查）
             wait_before_click: 是否在点击前等待元素可见
-            
-        Requirements: 1.4, 8.2
         
         使用示例:
             page.click("#submit-button")
@@ -194,8 +184,6 @@ class BasePage:
             text: 要填充的文本
             timeout: 超时时间（毫秒）
             clear_first: 是否先清空输入框
-            
-        Requirements: 1.4, 8.2
         
         使用示例:
             page.fill("#username", "testuser")
@@ -237,8 +225,6 @@ class BasePage:
             
         Returns:
             str: 元素的文本内容
-            
-        Requirements: 8.2
         
         使用示例:
             text = page.get_text("#welcome-message")
@@ -380,8 +366,6 @@ class BasePage:
             
         Returns:
             bytes: 截图的字节数据
-            
-        Requirements: 6.1, 6.2, 6.3, 6.4
         
         使用示例:
             screenshot = page.take_screenshot("login_page")
@@ -635,7 +619,17 @@ class BasePage:
         except Exception as e:
             self.logger.error(f"Timeout waiting for load state {state}: {e}")
             raise
-    
+
+    def post_add_locator_handler(self, selector):
+        """
+        添加元素定位器处理器,selector是定位器，用于关闭系统中随意弹出的弹窗
+        """
+        def handler(locator):
+            self.logger.info(f"Element locator handler closes the popup and locates the element: {locator}")
+            locator.click()
+
+        self.page.add_locator_handler(selector, handler)
+
     def execute_script(self, script: str, *args) -> any:
         """
         执行 JavaScript 代码

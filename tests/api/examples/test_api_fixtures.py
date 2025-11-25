@@ -70,7 +70,7 @@ class TestAPIFixtures:
         assert cache.get('context_test') == 'value'
         cache.clear()
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_attach_request_response_to_allure(
         self,
         mock_request,
@@ -96,7 +96,7 @@ class TestAPIFixtures:
         # 测试附加功能（不会实际附加到 Allure，但应该不报错）
         attach_request_response_to_allure(mock_response, "Test Request")
     
-    @patch('api.services.base_service.requests.Session.request')
+    @patch('base.api.services.base_service.requests.Session.request')
     def test_base_service_with_cache_integration(self, mock_request, base_service, api_cache):
         """测试 BaseService 与缓存的集成"""
         # 模拟响应

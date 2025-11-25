@@ -3,8 +3,6 @@
 
 该模块提供文件和目录操作的实用工具函数，包括文件读写、路径管理、
 文件查找等功能。
-
-Requirements: 8.5
 """
 
 import os
@@ -512,7 +510,7 @@ class FileHelper:
         Returns:
             Path: 完整路径
         """
-        return FileHelper.join_path(Settings.TEST_DATA_DIR, *paths)
+        return FileHelper.join_path(Settings.PROJECT_DATA_DIR, *paths)
     
     @staticmethod
     def get_log_path(*paths: Union[str, Path]) -> Path:

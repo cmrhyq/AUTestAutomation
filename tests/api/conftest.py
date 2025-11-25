@@ -1,0 +1,1 @@
+from base.api.fixtures import *

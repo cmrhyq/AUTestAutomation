@@ -3,8 +3,6 @@
 
 演示如何使用 BasePage 创建具体的页面对象类。
 该示例使用 example.com 作为测试目标网站。
-
-Requirements: 10.3
 """
 
 from typing import Optional

@@ -2,6 +2,11 @@ import multiprocessing
 from pathlib import Path
 from datetime import datetime
 
+import pytest
+
+from config import Settings
+from core import TestLogger, DataCache
+
 
 # ==================== Pytest Hooks for Parallel Execution ====================
 
@@ -18,33 +23,33 @@ def pytest_configure(config):
     """
     logger = TestLogger.get_logger("PytestConfigure")
     
-    # Create necessary directories
+    # 创建必要的目录
     Settings.create_directories()
     logger.info("Created necessary directories")
     
-    # Validate configuration
+    # 验证配置
     is_valid, errors = Settings.validate()
     if not is_valid:
         logger.warning("Configuration validation errors found:")
         for error in errors:
             logger.warning(f"  - {error}")
     
-    # Log configuration summary
+    # 记录配置摘要
     config_summary = Settings.get_config_summary()
     logger.info("Configuration Summary:")
     for category, values in config_summary.items():
         logger.info(f"  {category}: {values}")
     
-    # Detect and log CPU cores for parallel execution
+    # 检测并记录 CPU 核心以进行并行执行
     cpu_count = multiprocessing.cpu_count()
     logger.info(f"Detected {cpu_count} CPU cores")
     
-    # Check if xdist is being used
+    # 检查是否正在使用 xdist
     if hasattr(config, 'workerinput'):
         worker_id = config.workerinput.get('workerid', 'unknown')
         logger.info(f"Running as xdist worker: {worker_id}")
     else:
-        # Check if -n option was provided
+        # 检查是否提供了 -n 选项
         numprocesses = config.getoption('numprocesses', default=None)
         if numprocesses:
             if numprocesses == 'auto':
@@ -55,7 +60,7 @@ def pytest_configure(config):
         else:
             logger.info("Parallel execution not enabled (use -n auto or -n <number>)")
     
-    # Store test results for aggregation
+    # 存储测试结果以便汇总
     if not hasattr(config, '_test_results'):
         config._test_results = []
     
@@ -92,24 +97,22 @@ def _create_allure_environment_properties():
         logging.warning(f"Failed to create Allure environment properties: {e}")
 
 
-def pytest_session_start(session):
+def pytest_sessionstart(session):
     """
     在创建 Session 对象之后、执行数据收集之前调用，并进入运行测试循环。
     由于此时 allure-results 目录已被清理，因此在此处创建 environment.properties 文件是合适的。
     """
     logger = TestLogger.get_logger("SessionStart")
-    logger.info("=" * 80)
     logger.info("Test Session Starting")
     logger.info(f"Session ID: {session.sessionid if hasattr(session, 'sessionid') else 'N/A'}")
     logger.info(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    logger.info("=" * 80)
     
     # Create Allure environment properties file after directory is cleaned
     _create_allure_environment_properties()
     logger.info("Allure environment properties created")
 
 
-def pytest_session_finish(session, exitstatus):
+def pytest_sessionfinish(session, exitstatus):
     """
     在整个测试运行结束后，返回退出状态之前调用。
 
@@ -119,12 +122,10 @@ def pytest_session_finish(session, exitstatus):
     - 最终日志记录和报告
     """
     logger = TestLogger.get_logger("SessionFinish")
-    
-    logger.info("=" * 80)
+
     logger.info("Test Session Finishing")
     logger.info(f"Exit Status: {exitstatus}")
     logger.info(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    logger.info("=" * 80)
     
     # Aggregate test results
     if hasattr(session.config, '_test_results'):
@@ -148,11 +149,10 @@ def pytest_session_finish(session, exitstatus):
     cache = DataCache.get_instance()
     cache.clear()
     logger.info("Data cache cleared at session end")
-    
-    logger.info("=" * 80)
 
 
-def pytest_runtest_log_report(report):
+
+def pytest_runtest_logreport(report):
     """
     在生成测试报告后调用。
 
@@ -204,16 +204,12 @@ def session_setup_teardown():
     - 记录会话生命周期事件
     """
     logger = TestLogger.get_logger("SessionFixture")
-    logger.info("=" * 80)
     logger.info("Session fixture setup starting")
-    logger.info("=" * 80)
     
     yield
     
     # Session teardown
-    logger.info("=" * 80)
     logger.info("Session fixture teardown starting")
-    logger.info("=" * 80)
     
     # Clear data cache to prevent data leakage between test sessions
     cache = DataCache.get_instance()
@@ -257,17 +253,13 @@ def test_logger(request):
 
     """
     logger = TestLogger.get_logger(f"Test.{request.node.name}")
-    
-    logger.info("-" * 80)
+
     logger.info(f"Test started: {request.node.name}")
     logger.info(f"Test location: {request.node.nodeid}")
-    logger.info("-" * 80)
     
     yield logger
-    
-    logger.info("-" * 80)
+
     logger.info(f"Test finished: {request.node.name}")
-    logger.info("-" * 80)
     
     # Attach test log to Allure report
     try:
