@@ -619,7 +619,17 @@ class BasePage:
         except Exception as e:
             self.logger.error(f"Timeout waiting for load state {state}: {e}")
             raise
-    
+
+    def post_add_locator_handler(self, selector):
+        """
+        添加元素定位器处理器,selector是定位器，用于关闭系统中随意弹出的弹窗
+        """
+        def handler(locator):
+            self.logger.info(f"Element locator handler closes the popup and locates the element: {locator}")
+            locator.click()
+
+        self.page.add_locator_handler(selector, handler)
+
     def execute_script(self, script: str, *args) -> any:
         """
         执行 JavaScript 代码
