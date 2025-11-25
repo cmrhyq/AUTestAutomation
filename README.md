@@ -262,19 +262,19 @@ python generate_report.py clean
 
 ```bash
 # 方式 1: 运行测试并立即查看报告（推荐）
-pytest --alluredir=allure-results
-allure serve allure-results
+pytest --alluredir=./report/allure-results
+allure serve ./report/allure-results
 
 # 方式 2: 生成静态报告到指定目录
 pytest --alluredir=allure-results
-allure generate allure-results -o allure-report --clean
+allure generate ./report/allure-results/ -o ./report/allure-report/ --clean
 
 # 方式 3: 打开已生成的静态报告
-allure open allure-report
+allure open ./report/allure-report
 
 # 方式 4: 清理旧结果并重新生成
-pytest --alluredir=allure-results --clean-alluredir
-allure serve allure-results
+pytest --alluredir=./report/allure-results --clean-alluredir
+allure serve ./report/allure-results
 ```
 
 #### Allure 报告功能
@@ -299,7 +299,7 @@ Allure 报告提供以下信息：
 ```ini
 [pytest]
 addopts = 
-    --alluredir=allure-results
+    --alluredir=report/allure-results
     --clean-alluredir
 ```
 

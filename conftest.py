@@ -23,33 +23,33 @@ def pytest_configure(config):
     """
     logger = TestLogger.get_logger("PytestConfigure")
     
-    # Create necessary directories
+    # 创建必要的目录
     Settings.create_directories()
     logger.info("Created necessary directories")
     
-    # Validate configuration
+    # 验证配置
     is_valid, errors = Settings.validate()
     if not is_valid:
         logger.warning("Configuration validation errors found:")
         for error in errors:
             logger.warning(f"  - {error}")
     
-    # Log configuration summary
+    # 记录配置摘要
     config_summary = Settings.get_config_summary()
     logger.info("Configuration Summary:")
     for category, values in config_summary.items():
         logger.info(f"  {category}: {values}")
     
-    # Detect and log CPU cores for parallel execution
+    # 检测并记录 CPU 核心以进行并行执行
     cpu_count = multiprocessing.cpu_count()
     logger.info(f"Detected {cpu_count} CPU cores")
     
-    # Check if xdist is being used
+    # 检查是否正在使用 xdist
     if hasattr(config, 'workerinput'):
         worker_id = config.workerinput.get('workerid', 'unknown')
         logger.info(f"Running as xdist worker: {worker_id}")
     else:
-        # Check if -n option was provided
+        # 检查是否提供了 -n 选项
         numprocesses = config.getoption('numprocesses', default=None)
         if numprocesses:
             if numprocesses == 'auto':
@@ -60,7 +60,7 @@ def pytest_configure(config):
         else:
             logger.info("Parallel execution not enabled (use -n auto or -n <number>)")
     
-    # Store test results for aggregation
+    # 存储测试结果以便汇总
     if not hasattr(config, '_test_results'):
         config._test_results = []
     
