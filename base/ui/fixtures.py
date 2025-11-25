@@ -19,6 +19,7 @@ from playwright.sync_api import (
     Page
 )
 
+from config import env_manager
 from config.settings import Settings
 from core.log.logger import TestLogger
 from core.allure.allure_helper import AllureHelper
@@ -90,6 +91,12 @@ def browser(playwright_instance: Playwright) -> Generator[Browser, None, None]:
     logger.info("Closing browser")
     browser.close()
     logger.info("Browser closed successfully")
+
+
+@pytest.fixture(scope="session")
+def ui_env():
+    env = env_manager.get_config()
+    return env
 
 
 @pytest.fixture(scope="function")

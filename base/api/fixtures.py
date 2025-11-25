@@ -49,7 +49,7 @@ def api_cache():
 
 
 @pytest.fixture(scope="session")
-def api_env(api_logger):
+def api_env():
     env = env_manager.get_config()
     return env
 
