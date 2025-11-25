@@ -18,44 +18,42 @@
 ## 项目结构
 
 ```
-test-automation-framework/
-├── config/                      # 配置模块
-│   ├── __init__.py
-│   ├── settings.py             # 全局配置
-│   └── env_config.py           # 环境配置
-├── core/                        # 核心功能模块
-│   ├── __init__.py
-│   ├── logger.py               # 日志管理器
-│   ├── data_cache.py           # 单例数据缓存
-│   └── allure_helper.py        # Allure 辅助工具
-├── ui/                          # UI 测试模块
-│   ├── __init__.py
-│   ├── pages/                  # Page Object 页面对象
-│   │   ├── __init__.py
-│   │   └── base_page.py        # 基础页面类
-│   └── fixtures.py             # UI 测试 fixtures
-├── api/                         # API 测试模块
-│   ├── __init__.py
-│   ├── services/               # API 服务封装
-│   │   ├── __init__.py
-│   │   └── base_service.py     # 基础服务类
-│   └── fixtures.py             # API 测试 fixtures
-├── tests/                       # 测试用例
-│   ├── __init__.py
-│   ├── ui/                     # UI 测试用例
-│   │   └── __init__.py
-│   └── api/                    # API 测试用例
-│       └── __init__.py
-├── utils/                       # 工具模块
-│   ├── __init__.py
-│   ├── file_helper.py          # 文件操作工具
-│   └── data_helper.py          # 数据处理工具
-├── logs/                        # 日志文件目录（自动创建）
-├── allure-results/              # Allure 结果目录（自动创建）
-├── conftest.py                  # Pytest 全局配置
-├── pytest.ini                   # Pytest 配置文件
-├── requirements.txt             # 依赖包列表
-└── README.md                    # 项目文档
+AUAutoTest/
+├── base/                           # 基础测试模块
+│   ├── ui/                         # UI 测试模块
+│   │   ├── pages/                  # Page Object 页面对象
+│   │   │   └── base_page.py        # 基础页面类
+│   │   └── fixtures.py             # UI 测试 fixtures
+│   └── api/                        # API 测试模块
+│       ├── services/               # API 服务封装
+│       │   └── base_service.py     # 基础服务类
+│       └── fixtures.py             # API 测试 fixtures
+├── config/                         # 配置模块
+│   ├── settings.py                 # 全局配置
+│   └── env_config.py               # 环境配置
+├── core/                           # 核心功能模块
+│   ├── logger.py                   # 日志管理器
+│   ├── data_cache.py               # 单例数据缓存
+│   └── allure_helper.py            # Allure 辅助工具
+├── tests/                          # 测试用例
+│   ├── ui/                         # UI 测试用例
+│   └── api/                        # API 测试用例
+├── utils/                          # 工具模块
+│   ├── file_helper.py              # 文件操作工具
+│   ├── internet_utils.py           # 网络相关工具
+│   ├── snow_id_utils.py            # 雪花ID工具
+│   └── data_helper.py              # 数据处理工具
+├── report/                         # 报告目录
+│   ├── allure-results/             # Allure 结果目录（自动创建）
+│   └── allure-report/              # Allure HTML报告目录
+├── logs/                           # 日志文件目录（自动创建）
+├── screenshots/                    # UI自动化测试截图目录
+├── .env                            # 系统级环境配置
+├── conftest.py                     # Pytest 全局配置
+├── generate_report.py              # 静态报告生成
+├── pytest.ini                      # Pytest 配置文件
+├── requirements.txt                # 依赖包列表
+└── README.md                       # 项目文档
 ```
 
 ## 快速开始
@@ -80,7 +78,7 @@ playwright install
 在根目录新建.env文件并写入以下内容
 ```dotenv
 # ==================== 测试环境配置 ====================
-# 测试环境：dev, test, staging, prod
+# 测试环境，这个环境可以自定义，但是定义前得保证 data/ 目录下有相应的环境配置文件
 TEST_ENV=test
 
 # ==================== 浏览器配置 ====================
@@ -100,30 +98,6 @@ VIEWPORT_WIDTH=1920
 VIEWPORT_HEIGHT=1080
 # 是否启用浏览器开发者工具 (true/false)
 DEVTOOLS=false
-
-# ==================== API 配置 ====================
-# API 基础 URL
-API_BASE_URL=https://test-api.example.com
-# API 请求超时时间（秒）
-API_TIMEOUT=30
-# API 连接超时时间（秒）
-API_CONNECT_TIMEOUT=10
-# API 读取超时时间（秒）
-API_READ_TIMEOUT=30
-# 是否验证 SSL 证书 (true/false)
-VERIFY_SSL=true
-
-# ==================== 认证配置 ====================
-# Bearer Token
-BEARER_TOKEN=
-# API Key
-API_KEY=
-# API Key Header 名称
-API_KEY_HEADER=X-API-Key
-# Basic Auth 用户名
-BASIC_AUTH_USERNAME=
-# Basic Auth 密码
-BASIC_AUTH_PASSWORD=
 
 # ==================== 日志配置 ====================
 # 日志级别：DEBUG, INFO, WARNING, ERROR, CRITICAL
