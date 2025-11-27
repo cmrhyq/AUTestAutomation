@@ -24,3 +24,6 @@ structlog==23.2.0
 # Utilities
 python-dotenv==1.0.0
 pyyaml==6.0.1
+
+# performance test
+locust==2.42.5
