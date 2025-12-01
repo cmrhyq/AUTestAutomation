@@ -8,6 +8,16 @@ from core import DataCache
 
 @dataclass
 class PortalUserEntity(object):
+    """
+    用户相关的实体类
+    user_id: 用户编号
+    username: 登陆用户名
+    password: 登陆密码
+    tenant_code: 租户编码
+    phone: DES加密后的手机号
+    email: DES加密后的邮箱
+    expire_time: token过期时间，默认18000000
+    """
     user_id: str = None
     username: str = None
     password: str = None
@@ -18,8 +28,45 @@ class PortalUserEntity(object):
 
 @dataclass
 class ClusterPlaneEntity(object):
+    """
+    集群平面相关的实体类
+    instance_id: 实例id
+    prod_inst_name: pord实例名称
+    """
     instance_id: str = None
     prod_inst_name: str = None
+
+@dataclass
+class CreateSystemEntity(object):
+    """
+    创建系统需要的参数实体
+    system_name: 系统名称
+    system_code: 系统编码
+    system_desc: 系统描述
+    field_one: 一级域编号
+    field_two: 二级域编号
+    create_id: 创建者编号
+    username: 创建者用户名
+    """
+    system_name: str = None
+    system_code: str = None
+    system_desc: str = None
+    field_one: str = None
+    field_two: str = None
+    create_id: str = None
+    username: str = None
+
+@dataclass
+class BasicCodeEntity(object):
+    """
+    测试时会用到的一些code实体
+    cell_code: 单元编号
+    tenant_code: 租户编号
+    system_code: 系统编号
+    """
+    cell_code: str = None
+    tenant_code: str = None
+    system_code: str = None
 
 
 class PanJiPortalService(BaseService):
@@ -334,3 +381,49 @@ class PanJiPortalService(BaseService):
         response = self.post(endpoint=url, json=body, headers=headers)
         return response.json()
 
+    def create_system(self, system: CreateSystemEntity):
+        """
+        创建系统
+        """
+        self.logger.info(f"Create system")
+        url = "/openapi/portal/restApi/system/add"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        body = {
+            "systemName": system.system_name,
+            "systemCode": system.system_code,
+            "systemDesc": system.system_desc,
+            "systemLevel": "SYS_2",
+            "systemEnvironment": "PROD",
+            "fieldOne": system.field_one,
+            "fieldTwo": system.field_two,
+            "systemSection": "平台能力中心",
+            "tenantId": "1",
+            "createId": system.create_id,
+            "userName": system.username
+        }
+        response = self.post(endpoint=url, json=body, headers=headers)
+        return response.json()
+
+    def system_resource_allocation(self, username: str, code_list: BasicCodeEntity):
+        """
+        系统资源配额分配
+        """
+        self.logger.info(f"System resource allocation")
+        url = f"/openapi/elastic-compute/v2/cells/{code_list.cell_code}/tenants/{code_list.tenant_code}/systems/{code_list.system_code}/quota/allocate"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        body = {
+            "memory": 1073741824,
+            "cpu": 1,
+            "storage": {
+                "nfs": []
+            },
+            "username": username
+        }
+        response = self.post(endpoint=url, json=body, headers=headers)
+        return response.json()
