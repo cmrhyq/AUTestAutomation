@@ -206,7 +206,7 @@ class PanJiPortalService(BaseService):
         }
         body = [
             {
-                "clusterInstanceId": "271",
+                "clusterInstanceId": "348",
                 "envCode": "生产环境",
                 "envName": "生产环境",
                 "tenantId": "1"
@@ -328,7 +328,7 @@ class PanJiPortalService(BaseService):
             "Authorization": cache.get("token"),
         }
         body = {
-            "systemEnvironment":"PROD",
+            "systemEnvironment": "PROD",
             "systemName": system_code
         }
         response = self.post(endpoint=url, json=body, headers=headers)
