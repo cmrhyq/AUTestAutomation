@@ -4,7 +4,8 @@ import allure
 import pytest
 
 from base.api.fixtures import api_cache
-from base.api.services.portal_service import PanJiPortalService, PortalUserEntity, ClusterPlaneEntity
+from base.api.services.portal_service import PanJiPortalService, PortalUserEntity, ClusterPlaneEntity, \
+    CreateSystemEntity
 from core.allure.allure_helper import AllureHelper
 
 
@@ -310,7 +311,7 @@ class TestPanjiPortalAPI:
     @allure.title("查询系统")
     @allure.description("验证能够成功查询系统")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_query_system(self, portal_service, api_env):
+    def test_query_system(self, portal_service, api_env, api_cache, api_logger):
         with AllureHelper.step("发送 POST 请求查询系统"):
             code = api_env.get("portal_system_code")
             response_json = portal_service.query_system(code)
@@ -318,6 +319,50 @@ class TestPanjiPortalAPI:
         with AllureHelper.step("验证响应数据"):
             assert isinstance(response_json, Dict), "响应应该是字典类型"
             assert response_json["code"] == 2000, "响应Code应等于2000"
+
+        with AllureHelper.step("缓存system_id数据"):
+            data_list = response_json["data"]["list"]
+            if len(data_list) > 0:
+                for item in data_list:
+                    if item["systemCode"] == code:
+                        api_cache.set("systemCode", item["systemCode"])
+                        api_logger.info(f"已缓存system_Id: {item['systemCode']}")
+
+        allure.attach(
+            str(response_json),
+            name="接口响应信息",
+            attachment_type=allure.attachment_type.JSON
+        )
+
+    @allure.title("创建系统")
+    @allure.description("验证能够成功创建系统")
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_create_system(self, portal_service, api_env, api_cache, api_logger):
+        # 判断系统是否已经创建
+        system_code = api_cache.get("systemCode")
+        if system_code is not None:
+            api_logger.info(f"已存在名为的{system_code}的数据，跳过当前测试用例")
+            pytest.skip(f"已存在名为的{system_code}的数据，跳过当前测试用例")
+
+        with AllureHelper.step("发送 POST 请求创建系统"):
+            create_system = CreateSystemEntity(
+                system_name=api_env.get("portal_system_code"),
+                system_code=api_env.get("portal_system_code"),
+                system_desc=api_env.get("portal_system_code"),
+                field_one=api_cache.get("firstFieldId"),
+                field_two=api_cache.get("secondFieldId"),
+                create_id=api_env.get("query_user_id"),
+                username=api_env.get("query_user_name"),
+            )
+            response_json = portal_service.create_system(create_system)
+
+        with AllureHelper.step("验证响应数据"):
+            assert isinstance(response_json, Dict), "响应应该是字典类型"
+            assert response_json["code"] == 2000, "响应Code应等于2000"
+
+        with AllureHelper.step("缓存响应代码数据"):
+            api_cache.set("createSystemRespCode", response_json["code"])
+            api_logger.info(f"已缓存createSystemRespCode: {response_json['code']}")
 
         allure.attach(
             str(response_json),
