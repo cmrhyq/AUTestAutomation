@@ -541,3 +541,91 @@ class PanJiPortalService(BaseService):
         }
         response = self.post(endpoint=url, json=body, headers=headers)
         return response.json()
+
+    def query_application_list(self, app_code: str):
+        """
+        查询应用列表
+        app_code: 应用编号
+        """
+        self.logger.info(f"Query application list")
+        url = "/openapi/portal/restApi/application/list"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        body = {
+            "pageNum": "1",
+            "pageSize": "1",
+            "applicationSourceName": app_code,
+            "applicationSourceType": "web_type"
+        }
+        response = self.post(endpoint=url, json=body, headers=headers)
+        return response.json()
+
+    def query_application_detail(self, app_id: str):
+        """
+        查看应用详细信息
+        app_id: 要查看的应用的编号
+        """
+        self.logger.info(f"Query application detail")
+        url = f"/openapi/portal/restApi/application/detail"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        params = {
+            "applicationSourceId", app_id
+        }
+        response = self.get(endpoint=url, params=params, headers=headers)
+        return response.json()
+
+    def system_resource_quota_remove(self, code_list: BasicCodeEntity):
+        """
+        系统资源配额释放/删除
+        """
+        self.logger.info(f"System resource quota remove")
+        url = f"/openapi/elastic-compute/v2/cells/{code_list.cell_code}/tenants/{code_list.tenant_code}/systems/{code_list.system_code}/quota/delete"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        response = self.post(endpoint=url, headers=headers)
+        return response.json()
+
+    def delete_application(self, app_id: str):
+        """
+        删除应用
+        app_id: 要删除的应用的编号
+        """
+        self.logger.info(f"Delete application")
+        url = "/openapi/portal/restApi/application/delete"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        body = {
+            "ids": app_id
+        }
+        response = self.post(endpoint=url, json=body, headers=headers)
+        return response.json()
+
+    def delete_system(self, system_id: str, system_code: str):
+        """
+        删除系统
+        app_id: 要删除的应用的编号
+        system_id: 要删除的系统的id
+        system_name: 要删除的系统的Code
+        """
+        self.logger.info(f"Delete application")
+        url = "/openapi/portal/restApi/system/delete"
+        cache = DataCache.get_instance()
+        headers = {
+            "Authorization": cache.get("token"),
+        }
+        body = {
+            "ids": system_id,
+            "systemCode": system_code,
+            "tenantCode": "tenant_admin"
+        }
+        response = self.post(endpoint=url, json=body, headers=headers)
+        return response.json()
