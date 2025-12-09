@@ -1,5 +1,7 @@
 {
   "api_base_url": "http://openapi.portal.nbpod3-31-181-20030.4a.cmit.cloud:20030",
+  "api_inner_base_url": "http://portal.nbpod3-31-181-20030.4a.cmit.cloud:20030",
+  "apikey":	"2328bf2a5a0e3b785194e788cf859aed",
   "basic_auth_username": "auto_test_probe",
   "basic_auth_password": "Abc123!@#$",
   "tenant_code": "tenant_admin",
