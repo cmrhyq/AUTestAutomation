@@ -14,9 +14,19 @@ TEST_RESULTS = {"passed": 0, "failed": 0, "skipped": 0, "error": 0}
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """收集每个用例的执行结果"""
+    """
+    收集每个用例的执行结果
+    
+    此 hook 同时完成两个功能：
+    1. 统计测试结果（passed/failed/skipped/error）
+    2. 将测试结果附加到测试项，以便 fixture 可以访问（用于 UI 测试失败截图等）
+    """
     outcome = yield
     report = outcome.get_result()
+    
+    # 将测试结果附加到测试项，以便 fixture 可以访问
+    # 这对于 UI 测试的失败截图功能是必需的
+    setattr(item, f"rep_{report.when}", report)
 
     # 只统计用例执行阶段（call）的结果，跳过 setup/teardown
     if report.when == "call":
