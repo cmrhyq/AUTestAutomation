@@ -18,7 +18,6 @@ from config.settings import Settings
 from core.log.logger import TestLogger
 from core.allure.allure_helper import AllureHelper
 
-@dataclass
 class WaitUntil(Enum):
     """
     wait_until: 等待条件，可选值：
@@ -32,7 +31,6 @@ class WaitUntil(Enum):
     net = "networkidle"
     commit = "commit"
 
-@dataclass
 class ElementState(Enum):
     """
     state: 元素状态，可选值：
@@ -46,7 +44,6 @@ class ElementState(Enum):
     visible = "visible"
     hidden = "hidden"
 
-@dataclass
 class LoadState(Enum):
     """
     state: 加载状态，可选值：
