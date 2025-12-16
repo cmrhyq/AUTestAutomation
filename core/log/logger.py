@@ -2,10 +2,11 @@
 日志管理器模块
 
 该模块提供统一的日志记录接口，支持多级别日志记录、双输出（控制台和文件）、
-日志格式化以及 Allure 报告集成。
+日志格式化、日志轮转以及 Allure 报告集成。
 """
 
 import logging
+import logging.handlers
 import os
 import threading
 from datetime import datetime
@@ -24,6 +25,7 @@ class TestLogger:
     - 多级别日志记录（DEBUG, INFO, WARNING, ERROR, CRITICAL）
     - 同时输出到控制台和文件
     - 统一的日志格式（包含时间戳、级别和消息）
+    - 日志轮转（按大小和数量限制）
     - Allure 报告集成
     - 线程安全的文件写入
     """
@@ -33,6 +35,10 @@ class TestLogger:
     _session_start_time: Optional[str] = None
     _setup_lock = threading.Lock()  # 保护日志系统初始化
     _file_lock = threading.Lock()  # 保护文件操作
+    
+    # 日志轮转配置
+    LOG_MAX_BYTES = 10 * 1024 * 1024  # 单个日志文件最大 10MB
+    LOG_BACKUP_COUNT = 5  # 保留最近 5 个备份文件
     
     @classmethod
     def setup_logger(cls, log_level: str = None) -> None:
@@ -78,12 +84,20 @@ class TestLogger:
                 console_handler.setFormatter(formatter)
                 root_logger.addHandler(console_handler)
             
-            # 添加文件处理器（使用线程安全的处理器）
+            # 添加文件处理器（使用 RotatingFileHandler 实现日志轮转）
             if Settings.LOG_TO_FILE:
-                # logging.FileHandler 本身是线程安全的，但我们添加额外的保护
-                file_handler = logging.FileHandler(
+                # 从配置中获取轮转参数，如果没有则使用默认值
+                max_bytes = getattr(Settings, 'LOG_MAX_BYTES', cls.LOG_MAX_BYTES)
+                backup_count = getattr(Settings, 'LOG_BACKUP_COUNT', cls.LOG_BACKUP_COUNT)
+                
+                # 使用 RotatingFileHandler 实现日志轮转
+                # 当日志文件达到 max_bytes 大小时，自动创建新文件
+                # 最多保留 backup_count 个备份文件
+                file_handler = logging.handlers.RotatingFileHandler(
                     cls._log_file_path,
                     mode='a',
+                    maxBytes=max_bytes,
+                    backupCount=backup_count,
                     encoding='utf-8'
                 )
                 file_handler.setLevel(getattr(logging, log_level))
