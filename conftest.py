@@ -7,6 +7,7 @@ import pytest
 from config import Settings
 from core import TestLogger, DataCache
 
+# 建议使用 threading.Lock 或 multiprocessing.Manager 来保护`
 TEST_RESULTS = {"passed": 0, "failed": 0, "skipped": 0, "error": 0}
 
 
