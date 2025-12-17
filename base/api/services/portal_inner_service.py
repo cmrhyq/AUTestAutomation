@@ -304,7 +304,7 @@ class PanJiPortalInnerService(BaseService):
             Dict[str, Any]: 绑定结果
         """
         self.logger.info(f"Binding role {role_code} to user {username} in tenant {tenant_code}")
-        url = f"/portal/api/v2/users/{username}/tenants/{tenant_code}/roles/{role_code}/bindRole"
+        url = f"/portal/api/v2/users/{username}/tenants/{tenant_code}/roles/{role_code}/bind"
         response = self.post(endpoint=url, headers=_get_default_headers())
         return response.json()
 
@@ -323,6 +323,21 @@ class PanJiPortalInnerService(BaseService):
         self.logger.info(f"Unbinding role {role_code} from user {username} in tenant {tenant_code}")
         url = f"/portal/api/v2/users/{username}/tenants/{tenant_code}/roles/{role_code}/unbind"
         response = self.post(endpoint=url, headers=_get_default_headers())
+        return response.json()
+
+    def get_tenant(self, tenant_code: str) -> Dict[str, Any]:
+        """
+        查询租户
+
+        Args:
+            tenant_code: 租户编码
+
+        Returns:
+            Dict[str, Any]: 租户列表数据
+        """
+        self.logger.info("Getting Tenant's info")
+        url = f"/portal/api/v2/tenants/{tenant_code}"
+        response = self.get(endpoint=url, headers=_get_default_headers())
         return response.json()
 
     def create_tenant(self, tenant: TenantEntity) -> Dict[str, Any]:
@@ -379,9 +394,9 @@ class PanJiPortalInnerService(BaseService):
         response = self.get(endpoint=url, headers=_get_default_headers())
         return response.json()
 
-    def get_roles_v2(self) -> Dict[str, Any]:
+    def get_roles(self) -> Dict[str, Any]:
         """
-        角色查询 (v2)
+        查询角色
 
         Returns:
             Dict[str, Any]: 角色列表数据
@@ -483,6 +498,60 @@ class PanJiPortalInnerService(BaseService):
         self.logger.info("Getting Role API Full Data")
         url = "/portal/api/roleApi/list"
         response = self.get(endpoint=url, headers=_get_default_headers())
+        return response.json()
+
+    def get_api_list(self, module_name: str) -> Dict[str, Any]:
+        """
+        API列表查询
+
+        Args:
+            module_name: 模块名称
+
+        Returns:
+            Dict[str, Any]: API列表数据
+        """
+        self.logger.info("Getting API list")
+        url = "/portal/api/v2/apiDefines"
+        params = {
+            "moduleName": module_name
+        }
+        response = self.get(endpoint=url, params=params, headers=_get_default_headers())
+        return response.json()
+
+    def api_bulk_authorization(self, role_code, api_list: List[Dict[str,Any]]) -> Dict[str, Any]:
+        """
+        API批量授权
+
+        Args:
+            role_code: 角色编码
+            api_list: 授权API列表数据，数据可以由API列表查询接口获得
+                例如: [{"apiId":"131","authorizedMethod":"get"},{"apiId":"133","authorizedMethod":"post"}]
+
+        Returns:
+            Dict[str, Any]: 授权结果
+        """
+        self.logger.info(f"API bulk authorization")
+        url = f"/portal/api/v2/roles/{role_code}/apis/auth"
+        payload = api_list
+        response = self.post(endpoint=url, json=payload, headers=_get_default_headers())
+        return response.json()
+
+    def api_bulk_reauthorization(self, role_code, api_list: List[Dict[str,Any]]) -> Dict[str, Any]:
+        """
+        API批量解除授权
+
+        Args:
+            role_code: 角色编码
+            api_list: 解除授权API列表数据，数据可以由API列表查询接口获得
+                例如: [{"apiId":"131","authorizedMethod":"get"},{"apiId":"133","authorizedMethod":"post"}]
+
+        Returns:
+            Dict[str, Any]: 解除授权结果
+        """
+        self.logger.info(f"API bulk authorization")
+        url = f"/portal/api/v2/roles/{role_code}/apis/unAuth"
+        payload = api_list
+        response = self.post(endpoint=url, json=payload, headers=_get_default_headers())
         return response.json()
 
     # ==================== 系统配置相关接口 ====================
@@ -598,7 +667,7 @@ class PanJiPortalInnerService(BaseService):
 
     def update_global_config(self, modules: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        全局配置修改
+        全局配置修改 和 全局配置修改-还原
 
         Args:
             modules: 模块配置列表，如 [{"moduleCode": "component", "enabled": true}]
