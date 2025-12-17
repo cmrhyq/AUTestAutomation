@@ -5,7 +5,7 @@ import pytest
 
 from base.api.fixtures import api_cache
 from base.api.services.portal_open_service import PanJiPortalOpenService, PortalUserEntity, ClusterPlaneEntity, \
-    SystemEntity
+    OpenSystemEntity
 from core.allure.allure_helper import AllureHelper
 
 
@@ -345,7 +345,7 @@ class TestPanjiPortalOpenAPI:
             pytest.skip(f"已存在名为的{system_code}的数据，跳过当前测试用例")
 
         with AllureHelper.step("发送 POST 请求创建系统"):
-            create_system = SystemEntity(
+            create_system = OpenSystemEntity(
                 system_name=api_env.get("portal_system_code"),
                 system_code=api_env.get("portal_system_code"),
                 system_desc=api_env.get("portal_system_code"),
