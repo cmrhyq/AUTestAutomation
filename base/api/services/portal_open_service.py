@@ -37,7 +37,7 @@ class ClusterPlaneEntity(object):
     prod_inst_name: str = None
 
 @dataclass
-class SystemEntity(object):
+class OpenSystemEntity(object):
     """
     创建 or 更新系统需要的参数实体
     system_id: 系统编号
@@ -69,6 +69,14 @@ class BasicCodeEntity(object):
     cell_code: str = None
     tenant_code: str = None
     system_code: str = None
+
+
+def _get_default_headers() -> Dict[str, str]:
+    """获取默认请求头"""
+    cache = DataCache.get_instance()
+    return {
+        "Authorization": cache.get("token"),
+    }
 
 
 class PanJiPortalOpenService(BaseService):
@@ -383,7 +391,7 @@ class PanJiPortalOpenService(BaseService):
         response = self.post(endpoint=url, json=body, headers=headers)
         return response.json()
 
-    def create_system(self, system: SystemEntity):
+    def create_system(self, system: OpenSystemEntity):
         """
         创建系统
         """
@@ -470,7 +478,7 @@ class PanJiPortalOpenService(BaseService):
         response = self.post(endpoint=url, json=body, headers=headers)
         return response.json()
 
-    def update_system(self, system: SystemEntity):
+    def update_system(self, system: OpenSystemEntity):
         """
         更新系统
         """
