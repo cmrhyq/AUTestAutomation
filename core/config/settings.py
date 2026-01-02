@@ -8,8 +8,9 @@
 import os
 from typing import Optional, Literal
 from pathlib import Path
-from dotenv import load_dotenv
 
+from core.config.env_config import env_manager
+from core.config.system_config import system_manager
 
 
 class Settings:
@@ -17,195 +18,103 @@ class Settings:
     测试框架全局配置类
     
     所有配置项都可以通过环境变量覆盖，环境变量名称为配置项名称的大写形式。
-    例如：BROWSER_TYPE 环境变量会覆盖 browser_type 配置。
+    例如：browser_type 系统变量会覆盖 browser_type 配置。
     """
-    load_dotenv()
+    env = env_manager.get_config()
+    system = system_manager.get_config()
+
+    # ==================== 测试环境配置 ====================
+    # 测试环境：dev, test, staging, prod
+    TEST_ENV: str = system.get("test_env", "test")
+    # 项目根目录
+    PROJECT_ROOT: Path = Path(__file__).parent.parent.parent
+    # 项目数据目录
+    PROJECT_CONFIG_DIR: Path = os.path.join(PROJECT_ROOT, "config")
     
     # ==================== 浏览器配置 ====================
-    
     # 浏览器类型：chromium, firefox, webkit
-    # 环境变量：BROWSER_TYPE
-    BROWSER_TYPE: Literal["chromium", "firefox", "webkit"] = os.getenv(
-        "BROWSER_TYPE", "chromium"
-    )
-    
+    BROWSER_TYPE: Literal["chromium", "firefox", "webkit"] = system.get("browser_type", "chromium")
     # 是否使用无头模式运行浏览器
-    # 环境变量：HEADLESS (true/false)
-    HEADLESS: bool = os.getenv("HEADLESS", "false").lower() == "true"
-    
+    HEADLESS: bool = system.get("headless", "false") == "true"
     # 浏览器操作超时时间（毫秒）
-    # 环境变量：BROWSER_TIMEOUT
-    BROWSER_TIMEOUT: int = int(os.getenv("BROWSER_TIMEOUT", "30000"))
-    
+    BROWSER_TIMEOUT: int = system.get("browser_timeout", 30000)
     # 页面加载超时时间（毫秒）
-    # 环境变量：PAGE_LOAD_TIMEOUT
-    PAGE_LOAD_TIMEOUT: int = int(os.getenv("PAGE_LOAD_TIMEOUT", "30000"))
-    
+    PAGE_LOAD_TIMEOUT: int = system.get("page_load_timeout", 30000)
     # 浏览器启动参数
-    # 环境变量：BROWSER_ARGS (逗号分隔)
-    BROWSER_ARGS: list = os.getenv("BROWSER_ARGS", "").split(",") if os.getenv("BROWSER_ARGS") else []
-    
+    BROWSER_ARGS: list = system.get("browser_args", "").split(",") if system.get("browser_args") else []
     # 视口大小
-    # 环境变量：VIEWPORT_WIDTH, VIEWPORT_HEIGHT
-    VIEWPORT_WIDTH: int = int(os.getenv("VIEWPORT_WIDTH", "1920"))
-    VIEWPORT_HEIGHT: int = int(os.getenv("VIEWPORT_HEIGHT", "1080"))
-    
+    VIEWPORT_WIDTH: int = system.get("viewport_width", 1920)
+    VIEWPORT_HEIGHT: int = system.get("viewport_height", 1080)
     # 是否启用浏览器开发者工具
-    # 环境变量：DEVTOOLS (true/false)
-    DEVTOOLS: bool = os.getenv("DEVTOOLS", "false").lower() == "true"
-    
+    DEVTOOLS: bool = system.get("devtools", "false") == "true"
+
     # ==================== API 配置 ====================
-    
-    # API 基础 URL
-    # 环境变量：API_BASE_URL
-    API_BASE_URL: str = os.getenv("API_BASE_URL", "")
-    
+    API_BASE_URL: str = env.get("api_base_url", "http://localhost:8000")
     # API 请求超时时间（秒）
-    # 环境变量：API_TIMEOUT
-    API_TIMEOUT: int = int(os.getenv("API_TIMEOUT", "30"))
-    
+    API_TIMEOUT: int = system.get("api_timeout", 30)
     # API 连接超时时间（秒）
-    # 环境变量：API_CONNECT_TIMEOUT
-    API_CONNECT_TIMEOUT: int = int(os.getenv("API_CONNECT_TIMEOUT", "10"))
-    
+    API_CONNECT_TIMEOUT: int = system.get("api_connect_timeout", 10)
     # API 读取超时时间（秒）
-    # 环境变量：API_READ_TIMEOUT
-    API_READ_TIMEOUT: int = int(os.getenv("API_READ_TIMEOUT", "30"))
-    
+    API_READ_TIMEOUT: int = system.get("api_read_timeout", 30)
     # 是否验证 SSL 证书
-    # 环境变量：VERIFY_SSL (true/false)
-    VERIFY_SSL: bool = os.getenv("VERIFY_SSL", "true").lower() == "true"
-    
-    # ==================== 认证配置 ====================
-    
-    # Bearer Token
-    # 环境变量：BEARER_TOKEN
-    BEARER_TOKEN: Optional[str] = os.getenv("BEARER_TOKEN")
-    
-    # API Key
-    # 环境变量：API_KEY
-    API_KEY: Optional[str] = os.getenv("API_KEY")
-    
-    # API Key Header 名称
-    # 环境变量：API_KEY_HEADER
-    API_KEY_HEADER: str = os.getenv("API_KEY_HEADER", "X-API-Key")
-    
-    # Basic Auth 用户名
-    # 环境变量：BASIC_AUTH_USERNAME
-    BASIC_AUTH_USERNAME: Optional[str] = os.getenv("BASIC_AUTH_USERNAME")
-    
-    # Basic Auth 密码
-    # 环境变量：BASIC_AUTH_PASSWORD
-    BASIC_AUTH_PASSWORD: Optional[str] = os.getenv("BASIC_AUTH_PASSWORD")
-    
+    VERIFY_SSL: bool = system.get("api_verify_ssl", "true") == "true"
+
     # ==================== 日志配置 ====================
-    
     # 日志级别：DEBUG, INFO, WARNING, ERROR, CRITICAL
-    # 环境变量：LOG_LEVEL
-    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = os.getenv(
-        "LOG_LEVEL", "INFO"
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = system.get(
+        "log_level", "INFO"
     )
-    
     # 日志目录
-    # 环境变量：LOG_DIR
-    LOG_DIR: str = os.getenv("LOG_DIR", "logs")
-    
+    LOG_DIR: str = system.get("log_dir", "logs")
     # 日志文件名格式
-    # 环境变量：LOG_FILE_FORMAT
-    LOG_FILE_FORMAT: str = os.getenv("LOG_FILE_FORMAT", "test_{timestamp}.log")
-    
+    LOG_FILE_FORMAT: str = system.get("log_file_format", "test_{timestamp}.log")
     # 是否在控制台输出日志
-    # 环境变量：LOG_TO_CONSOLE (true/false)
-    LOG_TO_CONSOLE: bool = os.getenv("LOG_TO_CONSOLE", "true").lower() == "true"
-    
+    LOG_TO_CONSOLE: bool = system.get("log_to_console", "true") == "true"
     # 是否输出日志到文件
-    # 环境变量：LOG_TO_FILE (true/false)
-    LOG_TO_FILE: bool = os.getenv("LOG_TO_FILE", "true").lower() == "true"
-    
+    LOG_TO_FILE: bool = system.get("log_to_file", "true") == "true"
     # 日志格式
-    # 环境变量：LOG_FORMAT
-    LOG_FORMAT: str = os.getenv(
-        "LOG_FORMAT",
+    LOG_FORMAT: str = system.get(
+        "log_format",
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
-    
     # 日志时间格式
-    # 环境变量：LOG_DATE_FORMAT
-    LOG_DATE_FORMAT: str = os.getenv("LOG_DATE_FORMAT", "%Y-%m-%d %H:%M:%S")
+    LOG_DATE_FORMAT: str = system.get("log_date_format", "%Y-%m-%d %H:%M:%S")
     
     # ==================== 并行执行配置 ====================
-    
     # 并行 worker 数量：auto 表示自动检测 CPU 核心数，或指定具体数字
-    # 环境变量：PARALLEL_WORKERS
-    PARALLEL_WORKERS: str = os.getenv("PARALLEL_WORKERS", "auto")
-    
+    PARALLEL_WORKERS: str = system.get("parallel_workers", "auto")
     # 是否启用并行执行
-    # 环境变量：ENABLE_PARALLEL (true/false)
-    ENABLE_PARALLEL: bool = os.getenv("ENABLE_PARALLEL", "true").lower() == "true"
-    
+    ENABLE_PARALLEL: bool = system.get("enable_parallel", "true") == "true"
     # 并行执行分发策略：loadscope, loadfile, loadgroup, load
-    # 环境变量：PARALLEL_DIST_MODE
-    PARALLEL_DIST_MODE: Literal["loadscope", "loadfile", "loadgroup", "load"] = os.getenv(
-        "PARALLEL_DIST_MODE", "loadscope"
+    PARALLEL_DIST_MODE: Literal["loadscope", "loadfile", "loadgroup", "load"] = system.get(
+        "parallel_dist_mode", "loadscope"
     )
     
     # ==================== 重试配置 ====================
-    
     # 最大重试次数
-    # 环境变量：MAX_RETRIES
-    MAX_RETRIES: int = int(os.getenv("MAX_RETRIES", "3"))
-    
+    MAX_RETRIES: int = system.get("max_retries", 3)
     # 重试延迟时间（秒）
-    # 环境变量：RETRY_DELAY
-    RETRY_DELAY: int = int(os.getenv("RETRY_DELAY", "1"))
-    
+    RETRY_DELAY: int = system.get("retry_delay", 1)
     # 是否启用失败重试
-    # 环境变量：ENABLE_RETRY (true/false)
-    ENABLE_RETRY: bool = os.getenv("ENABLE_RETRY", "false").lower() == "true"
+    ENABLE_RETRY: bool = system.get("enable_retry", "false") == "true"
     
     # ==================== Allure 报告配置 ====================
-    
     # Allure 结果目录
-    # 环境变量：ALLURE_RESULTS_DIR
-    ALLURE_RESULTS_DIR: str = os.getenv("ALLURE_RESULTS_DIR", "report/allure-results")
-    
+    ALLURE_RESULTS_DIR: str = system.get("allure_results_dir", "report/allure-results")
     # Allure 报告目录
-    # 环境变量：ALLURE_REPORT_DIR
-    ALLURE_REPORT_DIR: str = os.getenv("ALLURE_REPORT_DIR", "report/allure-report")
-    
+    ALLURE_REPORT_DIR: str = system.get("allure_report_dir", "report/allure-report")
     # 是否清理旧的 Allure 结果
-    # 环境变量：ALLURE_CLEAN_RESULTS (true/false)
-    ALLURE_CLEAN_RESULTS: bool = os.getenv("ALLURE_CLEAN_RESULTS", "true").lower() == "true"
+    ALLURE_CLEAN_RESULTS: bool = system.get("allure_clean_results", "true") == "true"
     
     # ==================== 截图配置 ====================
-    
     # 截图保存目录
-    # 环境变量：SCREENSHOT_DIR
-    SCREENSHOT_DIR: str = os.getenv("SCREENSHOT_DIR", "screenshots")
-    
+    SCREENSHOT_DIR: str = system.get("screenshot_dir", "screenshots")
     # 是否在失败时自动截图
-    # 环境变量：SCREENSHOT_ON_FAILURE (true/false)
-    SCREENSHOT_ON_FAILURE: bool = os.getenv("SCREENSHOT_ON_FAILURE", "true").lower() == "true"
-    
+    SCREENSHOT_ON_FAILURE: bool = system.get("screenshot_on_failure", "true") == "true"
     # 截图格式：png, jpeg
-    # 环境变量：SCREENSHOT_FORMAT
-    SCREENSHOT_FORMAT: Literal["png", "jpeg"] = os.getenv("SCREENSHOT_FORMAT", "png")
-    
+    SCREENSHOT_FORMAT: Literal["png", "jpeg"] = system.get("screenshot_format", "png")
     # 截图质量（仅对 jpeg 有效，1-100）
-    # 环境变量：SCREENSHOT_QUALITY
-    SCREENSHOT_QUALITY: int = int(os.getenv("SCREENSHOT_QUALITY", "80"))
-    
-    # ==================== 测试环境配置 ====================
-    
-    # 测试环境：dev, test, staging, prod
-    # 环境变量：TEST_ENV
-    TEST_ENV: str = os.getenv("TEST_ENV", "test")
-    
-    # 项目根目录
-    PROJECT_ROOT: Path = Path(__file__).parent.parent
-
-    # 项目数据目录
-    PROJECT_DATA_DIR: Path = os.path.join(PROJECT_ROOT, "data")
+    SCREENSHOT_QUALITY: int = system.get("screenshot_quality", 80)
     
     # ==================== 配置验证方法 ====================
     
@@ -226,9 +135,6 @@ class Settings:
         # 验证超时时间
         if cls.BROWSER_TIMEOUT <= 0:
             errors.append(f"BROWSER_TIMEOUT must be positive, got: {cls.BROWSER_TIMEOUT}")
-        
-        if cls.API_TIMEOUT <= 0:
-            errors.append(f"API_TIMEOUT must be positive, got: {cls.API_TIMEOUT}")
         
         # 验证日志级别
         valid_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -276,11 +182,6 @@ class Settings:
                 "timeout": cls.BROWSER_TIMEOUT,
                 "viewport": f"{cls.VIEWPORT_WIDTH}x{cls.VIEWPORT_HEIGHT}",
             },
-            "api": {
-                "base_url": cls.API_BASE_URL or "Not configured",
-                "timeout": cls.API_TIMEOUT,
-                "verify_ssl": cls.VERIFY_SSL,
-            },
             "logging": {
                 "level": cls.LOG_LEVEL,
                 "directory": cls.LOG_DIR,
@@ -314,7 +215,7 @@ class Settings:
             cls.ALLURE_RESULTS_DIR,
             cls.ALLURE_REPORT_DIR,
             cls.SCREENSHOT_DIR,
-            cls.PROJECT_DATA_DIR,
+            cls.PROJECT_CONFIG_DIR,
         ]
         
         for directory in directories:
