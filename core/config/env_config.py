@@ -6,12 +6,11 @@
 """
 
 import os
-import json
 import yaml
 from typing import Dict, Any, Optional
 from pathlib import Path
 
-from config import Settings
+from core.config.system_config import system_manager
 
 
 class EnvConfig:
@@ -60,12 +59,13 @@ class EnvironmentManager:
         Args:
             config_dir: 配置文件目录路径
         """
-        self.config_dir = config_dir or Path(Settings.PROJECT_DATA_DIR)
+        self.config_dir = config_dir or Path(os.path.join(Path(__file__).parent.parent.parent, "config"))
         self._current_env: Optional[str] = None
         self._config: Optional[EnvConfig] = None
         
         # 从环境变量获取当前环境
-        env_name = Settings.TEST_ENV
+        system = system_manager.get_config()
+        env_name = system.get("test_env")
         self.load_env(env_name)
     
     def load_env(self, env_name: str) -> EnvConfig:
@@ -82,23 +82,17 @@ class EnvironmentManager:
             FileNotFoundError: 配置文件不存在
             ValueError: 配置文件格式错误
         """
-        # 尝试加载 JSON 或 YAML 文件
-        json_file = self.config_dir / f"env_{env_name}.json"
+        # 尝试加载 yaml 文件
         yaml_file = self.config_dir / f"env_{env_name}.yaml"
-        yml_file = self.config_dir / f"env_{env_name}.yml"
         
         config_data = None
         
-        if json_file.exists():
-            config_data = self._load_json(json_file)
-        elif yaml_file.exists():
+        if yaml_file.exists():
             config_data = self._load_yaml(yaml_file)
-        elif yml_file.exists():
-            config_data = self._load_yaml(yml_file)
         else:
             raise FileNotFoundError(
-                f"配置文件不存在: {json_file} 或 {yaml_file}\n"
-                f"请在 {self.config_dir} 目录下创建 {env_name}.json 或 {env_name}.yaml"
+                f"配置文件不存在: {yaml_file}\n"
+                f"请在 {self.config_dir} 目录下创建 env_{env_name}.yaml"
             )
         
         # 环境变量覆盖配置
@@ -108,14 +102,6 @@ class EnvironmentManager:
         self._config = EnvConfig(config_data)
         
         return self._config
-    
-    def _load_json(self, file_path: Path) -> Dict[str, Any]:
-        """加载 JSON 配置文件"""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"JSON 格式错误 {file_path}: {e}")
     
     def _load_yaml(self, file_path: Path) -> Dict[str, Any]:
         """加载 YAML 配置文件"""
@@ -187,7 +173,7 @@ class EnvironmentManager:
         
         envs = []
         for file in self.config_dir.glob("*"):
-            if file.suffix in [".json", ".yaml", ".yml"]:
+            if file.suffix in [".yaml"]:
                 envs.append(file.stem)
         
         return sorted(envs)
@@ -196,9 +182,8 @@ class EnvironmentManager:
 # 创建全局环境管理器实例
 env_manager = EnvironmentManager()
 
-
 # 便捷函数
-def get_config() -> EnvConfig:
+def get_env_config() -> EnvConfig:
     """获取当前环境配置"""
     return env_manager.get_config()
 
