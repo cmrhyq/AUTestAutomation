@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Optional
 import allure
 
-from config.settings import Settings
+from core.config import Settings
 
 
 class TestLogger:

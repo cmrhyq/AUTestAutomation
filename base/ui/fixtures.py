@@ -7,6 +7,7 @@ UI 测试 Fixtures 模块
 - 失败时自动截图的 fixture
 - 资源清理逻辑
 """
+from logging import Logger
 
 import pytest
 from datetime import datetime
@@ -19,8 +20,8 @@ from playwright.sync_api import (
     Page
 )
 
-from config import env_manager
-from config.settings import Settings
+from core.config import env_manager
+from core.config import Settings
 from core.log.logger import TestLogger
 from core.allure.allure_helper import AllureHelper
 
@@ -95,7 +96,7 @@ def browser(playwright_instance: Playwright) -> Generator[Browser, None, None]:
 
 @pytest.fixture(scope="session")
 def ui_env():
-    env = env_manager.get_config()
+    env = env_manager.get_env_config()
     return env
 
 
@@ -280,7 +281,7 @@ def _capture_failure_screenshot(page: Page, test_name: str, failure_type: str) -
 
 
 @pytest.fixture(scope="function")
-def ui_logger(request: pytest.FixtureRequest) -> TestLogger:
+def ui_logger(request: pytest.FixtureRequest) -> Logger:
     """
     UI 测试日志记录器 fixture
     
