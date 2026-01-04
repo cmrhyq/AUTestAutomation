@@ -206,7 +206,7 @@ class TestBaseService:
         ]
         
         # 临时启用重试
-        from config.settings import Settings
+        from core.config import Settings
         original_retry = Settings.ENABLE_RETRY
         original_max_retries = Settings.MAX_RETRIES
         Settings.ENABLE_RETRY = True

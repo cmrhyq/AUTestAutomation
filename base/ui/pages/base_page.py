@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Optional, Union
 from playwright.sync_api import Page, Locator, TimeoutError as PlaywrightTimeoutError
 
-from config.settings import Settings
+from core.config import Settings
 from core.log.logger import TestLogger
 from core.allure.allure_helper import AllureHelper
 
