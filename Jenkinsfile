@@ -99,7 +99,7 @@ pipeline {
         stage('Install Playwright Browsers') {
             when {
                 anyOf {
-                    params.INSTALL_BROWSERS == true
+                    expression { params.INSTALL_BROWSERS == true }
                     expression { params.TEST_TYPE == 'all' || params.TEST_TYPE == 'ui' }
                 }
             }
