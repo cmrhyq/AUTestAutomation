@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            label 'python'
+        }
+    }
 
     options {
         // 构建超时设置（2小时）
