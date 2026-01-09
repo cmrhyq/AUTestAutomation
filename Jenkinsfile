@@ -1,7 +1,18 @@
 pipeline {
     agent {
         kubernetes {
-            label 'python'
+            yaml '''
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+              - name: python
+                image: python:3.12
+                command: [sleep, infinity]
+              - name: allure
+                image: frankescobar/allure-docker-service
+                command: [sleep, infinity]
+            '''
         }
     }
 
