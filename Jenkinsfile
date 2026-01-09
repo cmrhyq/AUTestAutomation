@@ -180,10 +180,17 @@ pipeline {
                     script {
                         echo "生成 Allure 报告..."
                     }
-                    sh '''
-                        # 使用 allure 容器生成报告
-                        allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
-                    '''
+                    // sh '''
+                    //     # 使用 allure 容器生成报告
+                    //     allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
+                    // '''
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: "${ALLURE_RESULTS_DIR}"]]
+                    ])
                 }
             }
         }
