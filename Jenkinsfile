@@ -78,36 +78,40 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    echo "开始拉取代码..."
-                    echo "分支: ${env.BRANCH_NAME ?: 'main'}"
+                container('python') {
+                    script {
+                        echo "开始拉取代码..."
+                        echo "分支: ${env.BRANCH_NAME ?: 'main'}"
+                    }
+                    checkout scm
                 }
-                checkout scm
             }
         }
 
         stage('Setup Python Environment') {
             steps {
-                script {
-                    echo "设置 Python 环境..."
-                    echo "Python 版本: ${sh(script: 'python --version', returnStdout: true).trim()}"
+                container('python') {
+                    script {
+                        echo "设置 Python 环境..."
+                        echo "Python 版本: ${sh(script: 'python --version', returnStdout: true).trim()}"
+                    }
+                    sh '''
+                        # 创建虚拟环境（如果不存在）
+                        if [ ! -d "${PYTHON_ENV}" ]; then
+                            python -m venv ${PYTHON_ENV}
+                        fi
+
+                        # 激活虚拟环境并升级 pip
+                        . ${PYTHON_ENV}/bin/activate
+                        pip install --upgrade pip setuptools wheel
+
+                        # 安装项目依赖
+                        pip install -r requirements.txt
+
+                        # 显示已安装的包
+                        pip list
+                    '''
                 }
-                sh '''
-                    # 创建虚拟环境（如果不存在）
-                    if [ ! -d "${PYTHON_ENV}" ]; then
-                        python -m venv ${PYTHON_ENV}
-                    fi
-
-                    # 激活虚拟环境并升级 pip
-                    . ${PYTHON_ENV}/bin/activate
-                    pip install --upgrade pip setuptools wheel
-
-                    # 安装项目依赖
-                    pip install -r requirements.txt
-
-                    # 显示已安装的包
-                    pip list
-                '''
             }
         }
 
@@ -119,51 +123,88 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    echo "安装 Playwright 浏览器驱动..."
+                container('python') {
+                    script {
+                        echo "安装 Playwright 浏览器驱动..."
+                    }
+                    sh '''
+                        . ${PYTHON_ENV}/bin/activate
+                        # 安装 Playwright 浏览器（仅安装 chromium 以节省时间）
+                        playwright install chromium
+                        # 安装 Playwright 系统依赖
+                        playwright install-deps chromium
+                        # 如果需要安装所有浏览器，取消下面的注释
+                        # playwright install --with-deps
+                    '''
                 }
-                sh '''
-                    . ${PYTHON_ENV}/bin/activate
-                    # 安装 Playwright 浏览器（仅安装 chromium 以节省时间）
-                    playwright install chromium
-                    # 如果需要安装所有浏览器，取消下面的注释
-                    # playwright install --with-deps
-                '''
             }
         }
 
         stage('Create Directories') {
             steps {
-                sh '''
-                    # 创建必要的目录
-                    mkdir -p ${REPORT_DIR}/allure-results
-                    mkdir -p ${REPORT_DIR}/allure-report
-                    mkdir -p logs
-                    mkdir -p screenshots
-                '''
+                container('python') {
+                    sh '''
+                        # 创建必要的目录
+                        mkdir -p ${REPORT_DIR}/allure-results
+                        mkdir -p ${REPORT_DIR}/allure-report
+                        mkdir -p logs
+                        mkdir -p screenshots
+                    '''
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    def testCommand = buildTestCommand()
-                    echo "执行测试命令: ${testCommand}"
-                    
-                    sh """
-                        . ${PYTHON_ENV}/bin/activate
-                        export TEST_ENV=${TEST_ENV}
-                        ${testCommand}
-                    """
+                container('python') {
+                    script {
+                        def testCommand = buildTestCommand()
+                        echo "执行测试命令: ${testCommand}"
+                        
+                        // 使用 catchError 允许测试失败后继续生成报告
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            sh """
+                                . ${PYTHON_ENV}/bin/activate
+                                export TEST_ENV=${TEST_ENV}
+                                ${testCommand}
+                            """
+                        }
+                    }
                 }
             }
         }
 
         stage('Generate Allure Report') {
             steps {
-                script {
-                    echo "生成 Allure 报告..."
+                container('allure') {
+                    script {
+                        echo "生成 Allure 报告..."
+                    }
+                    sh '''
+                        # 使用 allure 容器生成报告
+                        allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
+                    '''
                 }
+            }
+        }
+
+        stage('Archive Test Results') {
+            steps {
+                container('python') {
+                    script {
+                        echo "归档测试结果..."
+                    }
+                    archiveArtifacts artifacts: 'logs/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
+                    archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Publish Allure Report') {
+            steps {
+                // 使用 Jenkins Allure 插件发布报告（如果已安装）
                 allure([
                     includeProperties: false,
                     jdk: '',
@@ -173,41 +214,25 @@ pipeline {
                 ])
             }
         }
-
-        stage('Archive Test Results') {
-            steps {
-                script {
-                    echo "归档测试结果..."
-                }
-                archiveArtifacts artifacts: 'logs/**/*', allowEmptyArchive: true
-                archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
-                archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
-            }
-        }
     }
 
     post {
         always {
-            script {
-                echo "构建完成，清理环境..."
-                
-                // 发布测试结果摘要
-                def testResults = sh(
-                    script: ". ${PYTHON_ENV}/bin/activate && pytest --collect-only -q 2>/dev/null | tail -1 || echo 'No tests found'",
-                    returnStdout: true
-                ).trim()
-                echo "测试结果摘要: ${testResults}"
-                
-                // 如果启用清理，则清理工作空间
-                if (params.CLEAN_WORKSPACE) {
-                    echo "清理工作空间..."
-                    // 只清理临时文件，保留报告和日志
-                    sh '''
-                        rm -rf ${PYTHON_ENV}
-                        rm -rf __pycache__
-                        find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-                        find . -type f -name "*.pyc" -delete 2>/dev/null || true
-                    '''
+            container('python') {
+                script {
+                    echo "构建完成，清理环境..."
+                    
+                    // 如果启用清理，则清理工作空间
+                    if (params.CLEAN_WORKSPACE) {
+                        echo "清理工作空间..."
+                        // 只清理临时文件，保留报告和日志
+                        sh '''
+                            rm -rf ${PYTHON_ENV}
+                            rm -rf __pycache__
+                            find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+                            find . -type f -name "*.pyc" -delete 2>/dev/null || true
+                        '''
+                    }
                 }
             }
         }
@@ -238,13 +263,13 @@ pipeline {
 
         unstable {
             script {
-                echo "⚠️ 测试不稳定！"
+                echo "⚠️ 部分测试失败或不稳定！"
             }
         }
 
         cleanup {
             script {
-                echo "清理阶段..."
+                echo "清理阶段完成"
             }
         }
     }
