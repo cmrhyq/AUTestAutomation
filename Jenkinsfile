@@ -95,7 +95,7 @@ pipeline {
                 sh '''
                     # 创建虚拟环境（如果不存在）
                     if [ ! -d "${PYTHON_ENV}" ]; then
-                        python3 -m venv ${PYTHON_ENV}
+                        python -m venv ${PYTHON_ENV}
                     fi
 
                     # 激活虚拟环境并升级 pip
