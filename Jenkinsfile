@@ -90,7 +90,7 @@ pipeline {
             steps {
                 script {
                     echo "设置 Python 环境..."
-                    echo "Python 版本: ${sh(script: 'python3 --version', returnStdout: true).trim()}"
+                    echo "Python 版本: ${sh(script: 'python --version', returnStdout: true).trim()}"
                 }
                 sh '''
                     # 创建虚拟环境（如果不存在）
