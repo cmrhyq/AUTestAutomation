@@ -185,34 +185,40 @@ pipeline {
 
         stage('Generate Allure Report') {
             steps {
-                // 注意：allure() 插件在 Jenkins agent (jnlp) 容器中运行，不需要指定 container
-                script {
-                    echo "生成 Allure 报告..."
+                container('allure') {
+                    script {
+                        echo "使用 Allure 容器生成报告..."
+                    }
+                    sh '''
+                        # 使用 allure 容器生成 HTML 报告
+                        allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
+                    '''
                 }
-                allure([
-                    includeProperties: false,
-                    jdk: '',
-                    properties: [],
-                    reportBuildPolicy: 'ALWAYS',
-                    results: [[path: "${ALLURE_RESULTS_DIR}"]]
-                ])
             }
         }
 
         stage('Archive Test Results') {
             steps {
-                // archiveArtifacts 在 Jenkins agent 中运行，不需要指定 container
                 script {
                     echo "归档测试结果..."
                 }
+                // 归档测试结果和报告
                 archiveArtifacts artifacts: 'logs/**/*', allowEmptyArchive: true
                 archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
                 archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
                 archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
+                
+                // 发布 HTML 报告（使用 HTML Publisher 插件）
+                publishHTML(target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: "${REPORT_DIR}/allure-report",
+                    reportFiles: 'index.html',
+                    reportName: 'Allure Report'
+                ])
             }
         }
-
-        // 删除重复的 Publish Allure Report 阶段，已在 Generate Allure Report 中完成
     }
 
     post {
