@@ -194,6 +194,8 @@ pipeline {
                     sh '''
                         # 使用 allure 容器生成 HTML 报告
                         allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
+                        pip install allure-combine
+                        allure-combine ${REPORT_DIR}/allure-report --dest ./
                     '''
                 }
             }
@@ -209,6 +211,7 @@ pipeline {
                 archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
                 archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
                 archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
+                archiveArtifacts artifacts: "./complete.html", allowEmptyArchive: true
                 
                 // 发布 HTML 报告（使用 HTML Publisher 插件）
                 publishHTML(target: [
