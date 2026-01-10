@@ -40,6 +40,8 @@ pipeline {
         ALLURE_RESULTS_DIR = "report/allure-results"
         // 报告目录
         REPORT_DIR = "report"
+        // Playwright 安装地址
+        PLAYWRIGHT_DOWNLOAD_HOST = 'https://npmmirror.com/mirrors/playwright/'
     }
 
     parameters {
