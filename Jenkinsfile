@@ -194,7 +194,10 @@ pipeline {
                     sh '''
                         # 使用 allure 容器生成 HTML 报告
                         allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
+                        
+                        # 安装 allure-combine 并添加到 PATH
                         pip install allure-combine
+                        export PATH="$HOME/.local/bin:$PATH"
                         allure-combine ${REPORT_DIR}/allure-report --dest ./
                     '''
                 }
