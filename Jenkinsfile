@@ -5,12 +5,6 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
-              # 安全上下文
-              securityContext:
-                runAsUser: 1000      # Jenkins 用户 UID
-                runAsGroup: 1000     # Jenkins 用户 GID
-                fsGroup: 1000        # 文件系统组 - 自动设置 PVC 权限
-                runAsNonRoot: true
               containers:
               - name: python
                 image: python:3.12
@@ -150,11 +144,15 @@ pipeline {
             steps {
                 container('python') {
                     sh '''
-                        # 创建必要的目录
+                        # 创建必要的目录并设置权限（解决多容器权限问题）
                         mkdir -p ${REPORT_DIR}/allure-results
                         mkdir -p ${REPORT_DIR}/allure-report
                         mkdir -p logs
                         mkdir -p screenshots
+                        # 设置目录权限，确保所有用户可读写
+                        chmod -R 777 ${REPORT_DIR}
+                        chmod -R 777 logs
+                        chmod -R 777 screenshots
                     '''
                 }
             }
@@ -175,6 +173,11 @@ pipeline {
                                 ${testCommand}
                             """
                         }
+                        
+                        // 测试完成后修复权限，确保 Jenkins agent 可以访问
+                        sh '''
+                            chmod -R 777 ${REPORT_DIR} || true
+                        '''
                     }
                 }
             }
@@ -182,42 +185,10 @@ pipeline {
 
         stage('Generate Allure Report') {
             steps {
-                container('allure') {
-                    script {
-                        echo "生成 Allure 报告..."
-                    }
-                    // sh '''
-                    //     # 使用 allure 容器生成报告
-                    //     allure generate ${ALLURE_RESULTS_DIR} -o ${REPORT_DIR}/allure-report --clean
-                    // '''
-                    allure([
-                        includeProperties: false,
-                        jdk: '',
-                        properties: [],
-                        reportBuildPolicy: 'ALWAYS',
-                        results: [[path: "${ALLURE_RESULTS_DIR}"]]
-                    ])
+                // 注意：allure() 插件在 Jenkins agent (jnlp) 容器中运行，不需要指定 container
+                script {
+                    echo "生成 Allure 报告..."
                 }
-            }
-        }
-
-        stage('Archive Test Results') {
-            steps {
-                container('python') {
-                    script {
-                        echo "归档测试结果..."
-                    }
-                    archiveArtifacts artifacts: 'logs/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
-                    archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
-                }
-            }
-        }
-
-        stage('Publish Allure Report') {
-            steps {
-                // 使用 Jenkins Allure 插件发布报告（如果已安装）
                 allure([
                     includeProperties: false,
                     jdk: '',
@@ -227,6 +198,21 @@ pipeline {
                 ])
             }
         }
+
+        stage('Archive Test Results') {
+            steps {
+                // archiveArtifacts 在 Jenkins agent 中运行，不需要指定 container
+                script {
+                    echo "归档测试结果..."
+                }
+                archiveArtifacts artifacts: 'logs/**/*', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
+                archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
+            }
+        }
+
+        // 删除重复的 Publish Allure Report 阶段，已在 Generate Allure Report 中完成
     }
 
     post {
