@@ -5,6 +5,12 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
+              # 安全上下文
+              securityContext:
+                runAsUser: 1000      # Jenkins 用户 UID
+                runAsGroup: 1000     # Jenkins 用户 GID
+                fsGroup: 1000        # 文件系统组 - 自动设置 PVC 权限
+                runAsNonRoot: true
               containers:
               - name: python
                 image: python:3.12
