@@ -47,12 +47,12 @@ pipeline {
     parameters {
         choice(
             name: 'TEST_ENV',
-            choices: ['dev', 'test', 'staging', 'prod'],
+            choices: ['test', 'dev', 'staging', 'prod'],
             description: '选择测试环境'
         )
         choice(
             name: 'TEST_TYPE',
-            choices: ['all', 'ui', 'api', 'smoke', 'regression'],
+            choices: ['api', 'ui', 'all', 'smoke', 'regression'],
             description: '选择测试类型'
         )
         string(
