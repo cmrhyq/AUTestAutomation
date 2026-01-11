@@ -198,7 +198,12 @@ pipeline {
                         # 安装 allure-combine 并添加到 PATH
                         pip install allure-combine
                         export PATH="$HOME/.local/bin:$PATH"
-                        allure-combine ${REPORT_DIR}/allure-report --dest ./
+                        
+                        # 生成单文件 HTML 报告到 report 目录
+                        allure-combine ${REPORT_DIR}/allure-report --dest ${REPORT_DIR}
+                        
+                        # 显示生成的文件
+                        ls -la ${REPORT_DIR}/
                     '''
                 }
             }
