@@ -214,7 +214,7 @@ pipeline {
                 archiveArtifacts artifacts: 'screenshots/**/*', allowEmptyArchive: true
                 archiveArtifacts artifacts: "${ALLURE_RESULTS_DIR}/**/*", allowEmptyArchive: true
                 archiveArtifacts artifacts: "${REPORT_DIR}/allure-report/**/*", allowEmptyArchive: true
-                archiveArtifacts artifacts: "./complete.html", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/complete.html", allowEmptyArchive: true
                 
                 // 发布 HTML 报告（使用 HTML Publisher 插件）
                 publishHTML(target: [
