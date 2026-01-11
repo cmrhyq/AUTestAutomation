@@ -271,11 +271,11 @@ pipeline {
             script {
                 echo "❌ 测试失败！"
                 // 可以添加失败通知
-                // emailext(
-                //     subject: "❌ 测试失败: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                //     body: "构建失败！\n\n查看详情: ${env.BUILD_URL}\n\n查看日志: ${env.BUILD_URL}console",
-                //     to: "team@example.com"
-                // )
+                emailext(
+                    subject: "❌ 测试失败: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                    body: "构建失败！\n\n查看详情: ${env.BUILD_URL}\n\n查看日志: ${env.BUILD_URL}console",
+                    to: "cmrhyq@163.com"
+                )
             }
         }
 
